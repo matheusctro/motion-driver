@@ -12,7 +12,7 @@ export default async function findSerial() {
     });
 
     for (var i = 0; i < ports.length; i++) {
-      if (ports[i].manufacturer.toString() == 'wch.cn') {
+      if (ports[i].manufacturer.toString() == 'STMicroelectronics') {
         p = ports[i].path.toString();
       }
     }

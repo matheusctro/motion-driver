@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 const Motion = mongoose.model('motions');
 
+import {calibration, write, read, readPosition, run, clearMotion, axesFree} from '../cnc/driver';
+
 module.exports = {
   async index(req, res) {
     let motions = [];
