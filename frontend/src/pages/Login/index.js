@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './styles.css';
 import { useHistory } from 'react-router-dom';
 
-export default function Logon() {
+export default function Login() {
     const [id, setId] = useState('');
     const history = useHistory();
 
@@ -12,7 +12,7 @@ export default function Logon() {
         try {
             localStorage.setItem('user_id', id);
 
-            history.push('/home');
+            history.push('/monitore');
         } catch (err) {
             alert('Falha no login, tente novamente.')
         }
