@@ -1,6 +1,5 @@
 import React from 'react';
 import './styles.css';
-import $ from 'jquery';
 // import { useHistory } from 'react-router-dom';
 
 import madebyImg from '../../assets/MadeByICTSWhite.svg';
@@ -35,14 +34,33 @@ export default function Logon() {
             <div className="inside_container">
                 <div className="sidemenu-inside" id="sidemenu-inside">
                     <ul>
-                        <li className="list-monitoramento list-active">Monitoramento</li>
-                        <li className="list-manutencao">Manutenção</li>
-                        <li className="list-configuracoes">Configurações</li>
-                        <li className="list-registro">Registro de Usuário</li>
+                        <li className="list-monit list-active">Monitoramento</li>
+                        <li className="list-config">Configurações</li>
+                        <li className="list-infos">Informações</li>
                     </ul>
                     <div className="madeby">
                         <img src={madebyImg} alt="Made by ICTS" />
                     </div>
+                </div>
+            </div>
+
+            <div className="container monitoring_mode_container">
+                <div class="text_container">
+                    <h1>Modo Monitoramento</h1>
+                    <p>Alguns recursos como interagir com os atuadores não estão disponíveis no modo
+                        monitoramento</p>
+                </div>
+            </div>
+
+            <div className="container configuration_mode_container">
+                <div class="text_container">
+                    <h1>Modo Configuração</h1>
+                </div>
+            </div>
+
+            <div className="container info_mode_container">
+                <div class="text_container">
+                    <h1>Modo Informações</h1>
                 </div>
             </div>
 

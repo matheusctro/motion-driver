@@ -1,10 +1,18 @@
 import React from 'react';
-import './global.css';
+import { Provider } from 'react-redux';
+import { Store } from './redux/store';
+import { SnackbarProvider } from 'notistack';
+
+// import './global.css';
 import Routes from './routes';
 
 function App() {
   return (
-    <Routes />
+    <Provider store={Store}>
+        <SnackbarProvider>
+            <Routes />
+        </SnackbarProvider>
+    </Provider>
   );
 }
 
