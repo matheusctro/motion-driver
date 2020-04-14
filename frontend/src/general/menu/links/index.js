@@ -12,6 +12,7 @@ const Links = props => {
             key={props.index}
             className="sidebar-link">{}
             <Button className="sidebar-link-button">{props.label}</Button>
+            
         </Link>
     )
 }

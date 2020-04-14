@@ -18,8 +18,8 @@ export default function Login() {
         }
     }
     return (
-        <div className="logon-container">
-                <h1>Bem vindo(a) ao Motion Drive</h1>
+        <div className="login-container">
+            <h1>Bem vindo(a) ao Motion Drive</h1>
             <section className="form">
                 <form onSubmit={handleLogin}>
                     <h1>Faça seu login</h1>

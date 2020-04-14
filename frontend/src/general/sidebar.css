@@ -1,4 +1,4 @@
-.side-bar-padding-top {
+.sidebar-padding-top {
     height: 100%;
     padding-top: 50px;
     background-color: #3656AF;
@@ -6,17 +6,17 @@
 }
 
 .sidebar-link-button {
-    width: 100%;
-    padding: 30px;
-    color: white;
-    display: flex;
-    border-radius: 0px;
-    justify-content: left;
-    border-left: 4px solid transparent;
+    width: 100% !important;
+    padding: 30px !important;
+    color: white !important;
+    display: flex !important;
+    border-radius: 0px !important;
+    justify-content: left !important;
+    border-left: 4px solid transparent !important;
 }
 
 .sidebar-link-button:hover {
-    border-left: 4px solid white;
+    border-left: 4px solid white !important;
 }
 
 .logo-icts {

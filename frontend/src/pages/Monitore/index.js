@@ -2,7 +2,6 @@ import React from 'react';
 import Menu from '../../general/menu';
 import Topbar from '../../general/topbar';
 import './styles.css';
-// import { useHistory } from 'react-router-dom';
 
 const Monitore = (props) => {
     return (

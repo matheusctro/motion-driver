@@ -1,11 +1,10 @@
 import React from 'react';
-import './sidebar.css';
 import { connect } from 'react-redux';
-import { PAGES } from '../config';
 import Drawer from '@material-ui/core/Drawer';
 import { Button } from '@material-ui/core';
-import Links from './menu/links';
 import { withRouter } from 'react-router-dom';
+import Links from './menu/links';
+import { PAGES } from '../config';
 import './sidebar.css';
 
 import madeBy from '../assets/MadeByICTSWhite.svg';
@@ -13,7 +12,7 @@ import madeBy from '../assets/MadeByICTSWhite.svg';
 const Sidebar = (props) => {
     const exitHandleOnClick = history => {
         props.closeSideBar();
-        history.push();
+        history.push('/');
     }
 
     return (
@@ -29,9 +28,7 @@ const Sidebar = (props) => {
                                                             location={props.location}
                                                             to={`${PAGES[k]}`}/>
                 ))}
-                <Button className="sidebar-link-button" onClick={() => exitHandleOnClick(props.history)}>
-                    Sair
-                </Button>
+                <Button className="sidebar-link-button" onClick={() => exitHandleOnClick(props.history)}>Sair</Button>
                 <img className="logo-icts" src={madeBy} alt="Made by ICTS"/>
             </div>
         </Drawer>
