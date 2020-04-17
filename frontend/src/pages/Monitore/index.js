@@ -7,73 +7,52 @@ import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+
+var commands = ['MOVER(10,20,0)', 'DELAY(500)', 'ACIONAR(0)', 'DELAY(100)', 'ACIONAR(1)'];
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        minWidth: 270,
+    },
+    contentcard: {
+        backgroundColor: "#3656AF",
+        color: 'white',
+        font: '20px Roboto',
+        marginTop: '10px',
+        borderRadius: 10
+    },
     paper1: {
         padding: theme.spacing(2),
+        maxWidth: '100%',
     },
     paper: {
         padding: theme.spacing(2),
         textAlign: 'center',
         paddingTop: '20px',
+        width: '620px',
+        height: '620px',
         position: 'absolute',
     }
 }));
 
-const BorderLinearProgressZ = withStyles({
+const BorderLinearProgress = withStyles({
     root: {
+        transform: (props) => props.axis === 'x' ? 'rotate(135deg)': (props.axis === 'y' ? 'rotate(45deg)' : 'rotate(-90deg)'),
+        left: (props) => props.axis === 'x' ? '322px': (props.axis === 'y' ? '320px' : '330px'),
+        top: (props) => props.axis === 'x' ? '318px': (props.axis === 'y' ? '320px' : '320px'),
         position: 'absolute',
-        left: '330px',
-        top: '320px',
-        margin: '10px',
-        height: 10,
-        width: 250,
-        backgroundColor: lighten('#3660FE', 0.9),
-        borderRadius: 20,
-        transformOrigin: '0 100%',
-        transform: 'rotate(-90deg)',
-    },
-    bar: {
-        borderRadius: 20,
-        backgroundColor: '#3660FE',
-    }
-})(LinearProgress);
-
-const BorderLinearProgressY = withStyles({
-    root: {
-        position: 'absolute',
-        left: '320px',
-        top: '320px',
-        margin: '10px',
-        height: 10,
-        width: 250,
-        backgroundColor: lighten('#3660FE', 0.9),
-        borderRadius: 20,
-        transformOrigin: '0 100%',
-        transform: 'rotate(45deg)',
-    },
-    bar: {
-        borderRadius: 20,
-        backgroundColor: '#3660FE',
-    }
-})(LinearProgress);
-
-const BorderLinearProgressX = withStyles({
-    root: {
-        position: 'absolute',
-        left: '322px',
-        top: '318px',
         margin: '10px 10px',
         height: 10,
         width: 250,
-        backgroundColor: lighten('#3660FE', 0.9),
+        backgroundColor: lighten('#3656AF', 0.9),
         borderRadius: 20,
         transformOrigin: '0 100%',
-        transform: 'rotate(135deg)',
     },
     bar: {
         borderRadius: 20,
-        backgroundColor: '#3660FE',
+        backgroundColor: '#3656AF',
     }
 })(LinearProgress);
 
@@ -111,14 +90,17 @@ const Monitore = (props) => {
                     <Grid item xs={6}>
                         <Paper className={classes.paper}>
                             <h1>Tempo-Real</h1>
-                            <BorderLinearProgressX variant="determinate" value={completed}/>
-                            <BorderLinearProgressY variant="determinate" value={completed*0.5}/>
-                            <BorderLinearProgressZ variant="determinate" value={completed*0.9}/>
+                            <BorderLinearProgress variant="determinate" value={completed} axis="x"/>
+                            <BorderLinearProgress variant="determinate" value={completed*0.5} axis="y"/>
+                            <BorderLinearProgress variant="determinate" value={completed*0.9} axis="z"/>
                         </Paper>
                     </Grid>
                     <Grid item xs={6} >
                         <Paper className={classes.paper}>
                             <h1>Comandos</h1>
+                            <Card className={classes.root}>
+                                {commands.map((command) => (<CardContent className={classes.contentcard}>{command}</CardContent>))}
+                            </Card>
                         </Paper>
                     </Grid>
 
