@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         textAlign: 'center',
         paddingTop: '20px',
-        width: '620px',
+        width: '800px',
         height: '620px',
         position: 'absolute',
     }
@@ -99,7 +99,7 @@ const Monitore = (props) => {
                         <Paper className={classes.paper}>
                             <h1>Comandos</h1>
                             <Card className={classes.root}>
-                                {commands.map((command) => (<CardContent className={classes.contentcard}>{command}</CardContent>))}
+                                {commands.map(  (command) => (<CardContent className={classes.contentcard}>{command}</CardContent>))}
                             </Card>
                         </Paper>
                     </Grid>

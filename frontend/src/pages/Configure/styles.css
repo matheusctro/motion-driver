@@ -1,0 +1,39 @@
+.select-container {
+    padding: 10px;
+    display: flex;
+}
+.select-container p {
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 12px;
+    width: 80px;
+    text-align: center;
+}
+
+.btn-calibration {
+    font: 400 18px Roboto, sans-serif;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    background: #3660FE;
+    border: 0;
+    border-radius: 8px;
+    color: #FFF;
+    font-weight: 700;
+    margin-top: 5px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 20px;
+    transition: filter 0.2s;
+}
+
+.btn-calibration:hover {
+    filter: brightness(90%);
+}
+
+.btns-container {
+    margin: 0px 10px;
+    display: flex;
+}
