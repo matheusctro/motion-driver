@@ -1,6 +1,7 @@
 .select-container {
     padding: 10px;
     display: flex;
+    /* outline: 1px solid black; */
 }
 .select-container p {
     font-size: 20px;
@@ -36,4 +37,64 @@
 .btns-container {
     margin: 0px 10px;
     display: flex;
+}
+
+.main-config {
+    display: flex;
+}
+
+.points-interaction-container {
+    outline: 1px solid red;
+    width: 50%;
+    min-width: 500px;
+    min-height: 430px;
+    margin-top: 10px;
+}
+
+.commands-interaction-container {
+    outline: 1px solid blue;
+    width: 50%;
+    min-width: 500px;
+    margin-top: 10px;
+}
+
+.points-config {
+    /* outline: 1px solid green; */
+    height: 80px;
+    width: 100%;
+    display: flex;
+}
+
+.points-config #choose-point {
+    width: 200px;
+    height: 50px;
+    margin: 15px 10px;
+    text-align: center;
+    align-content: center;
+    padding: 1px;
+    outline: 1px solid gray;
+}
+
+.real-time-graphic {
+    outline: 1px solid blue;
+    width: 50%;
+    height: 240px;
+}
+
+.joystick {
+    /* outline: 1px solid black; */
+    width: 50%;
+    height: 240px;
+    display: flex;
+}
+
+.joystick #z-direction {
+    outline: 1px solid green;
+    width: 30%;
+}
+
+.joystick #xy-direction {
+    outline: 1px solid salmon;
+    width: 70%;
+    
 }
