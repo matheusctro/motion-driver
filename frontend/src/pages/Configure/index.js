@@ -57,9 +57,10 @@ const useStyles = makeStyles((theme) => ({
     },
     joystickbtns: {
         backgroundColor: '#3660FE',
-        width: '50px',
-        height: '50px',
-        //outline: '1px solid black'
+        color: 'white',
+        width: '60px',
+        height: '60px',
+        margin: '5px',
     }
 }));
 const Configure = (props) => {
@@ -127,14 +128,22 @@ const Configure = (props) => {
                                     </div>
                                     <div className="joystick">
                                         <div id="z-direction">
-                                            <Button className={classes.joystickbtns}><ArrowUpwardIcon /></Button>
-                                            <Button className={classes.joystickbtns}><ArrowDownwardIcon /></Button>
+                                            <Button className={classes.joystickbtns}>+Z<ArrowUpwardIcon /></Button>
+                                            <Button className={classes.joystickbtns}>-Z<ArrowDownwardIcon /></Button>
                                         </div>
-                                        <div id="xy-direction" style={{display: 'flex'}}>
-                                            <Button className={classes.joystickbtns} style={{margin: '45% 50px 50px 50px'}}><ArrowForwardIcon /></Button>
-                                            <Button className={classes.joystickbtns}><ArrowBackIcon /></Button>
-                                            <Button className={classes.joystickbtns}><ArrowUpwardIcon /></Button>
-                                            <Button className={classes.joystickbtns}><ArrowDownwardIcon /></Button>
+                                        <div id="xy-direction">
+                                            <div className="horizontalbtns" id="left">
+                                                <Button className={classes.joystickbtns}>-X<ArrowBackIcon /></Button>
+                                            </div>
+                                            
+                                            <div className="verticalbtns">
+                                                <Button className={classes.joystickbtns}>+Y<ArrowUpwardIcon /></Button>
+                                                <Button className={classes.joystickbtns}>-Y<ArrowDownwardIcon /></Button>
+                                            </div>
+
+                                            <div className="horizontalbtns">
+                                                <Button className={classes.joystickbtns}>+X<ArrowForwardIcon /></Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
