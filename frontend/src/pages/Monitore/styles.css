@@ -1,8 +1,35 @@
-.axis-graph {
-    /* outline: 1px solid red; */
-    height: 500px;
-}
 
 .main-window {
     display: flex;
+}
+
+.x, .y, .z {
+    height: 20px;
+    width: 200px;
+    position: absolute;
+}
+
+.x {
+    /* transform: rotate(45deg); */
+    transform-origin: 0 30%;
+}
+
+.y {
+    transform: rotate(135deg);
+    transform-origin: 0 25%;
+}
+
+.z {
+    transform: rotate(-90deg);
+    transform-origin: 0 30%;
+}
+
+.graph {
+    /* outline: 1px solid black; */
+    width: 100%;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
