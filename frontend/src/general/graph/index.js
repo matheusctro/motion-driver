@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
-import './graph.css';
+import './styles.css';
 
 const useStyles = makeStyles(theme => ({
     graphposition: {

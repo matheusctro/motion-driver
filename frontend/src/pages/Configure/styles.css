@@ -44,8 +44,8 @@
 }
 
 .points-interaction-container {
-    /* outline: 1px solid red; */
-    width: 50%;
+    outline: 1px solid red;
+    /* width: 50%; */
     min-width: 500px;
     min-height: 430px;
     margin-top: 10px;
@@ -53,8 +53,8 @@
 
 .commands-interaction-container {
     outline: 1px solid blue;
-    width: 50%;
-    min-width: 500px;
+    min-width: 400px;
+    
     margin-top: 10px;
 }
 
@@ -78,12 +78,14 @@
 .real-time-graphic {
     outline: 1px solid blue;
     width: 50%;
+    min-width: 450px;
     height: inherit;
 }
 
 .joystick {
-    /* outline: 2px solid black; */
+    outline: 2px solid black;
     width: 50%;
+    min-width: 330px;
     height: inherit;
     display: flex;
 }

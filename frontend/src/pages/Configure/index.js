@@ -1,6 +1,8 @@
 import React from 'react';
 import Menu from '../../general/menu';
 import Topbar from '../../general/topbar';
+import Graph from '../../general/graph';
+import ProgramTable from '../../general/table';
 import './styles.css';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -43,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
         width: '800px',
         marginTop: '1px',
         marginBottom: '1px',
-    },
-    test: {
-        height: '45px',
-        display: 'flex',
     },
     switch: {
         width: '150px',
@@ -124,7 +122,7 @@ const Configure = (props) => {
                                 </div>
                                 <div style= {{display: 'flex'}}>
                                     <div className="real-time-graphic">
-                                    
+                                        <Graph />
                                     </div>
                                     <div className="joystick">
                                         <div id="z-direction">
@@ -152,7 +150,7 @@ const Configure = (props) => {
                             </div>
 
                             <div className="commands-interaction-container">
-
+                                <ProgramTable />
                             </div>
                         </div>            
                     </Paper>
