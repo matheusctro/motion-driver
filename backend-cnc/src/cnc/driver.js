@@ -28,126 +28,125 @@ const PARAM_Z = 38;
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
 
-async function calibration(){
+async function calibration() {
   return await execute_cmd(0x6C, 0x00);
 }
 
-async function goHome(){
+async function goHome() {
   return await execute_cmd(0x50, 0x00);
 }
 
 //Mandar valor absoluto e não incremental.
-async function step(motor, step, mode){
+async function step(motor, step, mode) {
   let opcode1 = 0x00;
   let opcode0 = 0x00;
   let motor_ = 0;
 
-  if(motor == 'x') motor_ = 0;
+  if (motor == 'x') motor_ = 0;
 
-  if(motor == 'y') motor_ = 1;
+  if (motor == 'y') motor_ = 1;
 
-  if(motor == 'z') motor_ = 2;
+  if (motor == 'z') motor_ = 2;
 
   if (mode) {  // cm
-    opcode1 = Number((GOCMop << 4)&0xF0 | (motor_ << 2)&0x0C | step & 0x0300);
+    opcode1 = Number((GOCMop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
     opcode0 = Number(step & 0xFF);
   } else {    // step
-    opcode1 = Number((GOSTEPop << 4)&0xF0 | (motor_ << 2)&0x0C | step & 0x0300);
+    opcode1 = Number((GOSTEPop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
     opcode0 = Number(step & 0xFF);
   }
   return await execute_cmd(opcode1, opcode0);
 }
 
-async function stop(){
+async function stop() {
   return await stop_cmd();
 }
 
-async function run(MOTION){
+async function run(MOTION) {
   return await run_cmd(MOTION);
 }
 
-async function setSize(sizeX, sizeY, sizeZ){
+async function setSize(sizeX, sizeY, sizeZ) {
   let VALUE1 = 0x00;
   let VALUE0 = 0x00;
 
-  VALUE0 = sizeX&0x00FF;
-  VALUE1 = sizeX&0xFF00;
+  VALUE0 = sizeX & 0x00FF;
+  VALUE1 = sizeX & 0xFF00;
 
   let res = await set_param_cmd(PARAM_X, VALUE1, VALUE0);
-  if(!res) return false;
+  if (!res) return false;
 
-  VALUE0 = sizeY&0x00FF;
-  VALUE1 = sizeY&0xFF00;
+  VALUE0 = sizeY & 0x00FF;
+  VALUE1 = sizeY & 0xFF00;
 
   res = await set_param_cmd(PARAM_Y, VALUE1, VALUE0);
-  if(!res) return false;
+  if (!res) return false;
 
-  VALUE0 = sizeZ&0x00FF;
-  VALUE1 = sizeZ&0xFF00;
+  VALUE0 = sizeZ & 0x00FF;
+  VALUE1 = sizeZ & 0xFF00;
 
   res = await set_param_cmd(PARAM_Z, VALUE1, VALUE0);
-  if(!res) return false;
+  if (!res) return false;
 
   return true;
 }
 
-async function write(programa){
+async function write(programa) {
   let MOTION = programa.id;
-  let CMDS = programa.comandos;
+  let CMDS = programa.cmmds;
   let OPCODE = [];
   OPCODE = decode(CMDS);
 
   let res = await load_cmd(MOTION);
-  if(!res) return false;
+  if (!res) return false;
 
   var j = 0;
-  for(j = 0; j < OPCODE[1].length; j++){
-    res = await write_cmd(j, OPCODE[1][j], OPCODE[0][j]);
-    if(!res) return false;
+  for (j = 0; j < OPCODE[1].length; j++) {
+    res = await write_cmd(j, OPCODE[0][j], OPCODE[1][j]);
+    if (!res) return false;
   }
 
   res = await update_cmd();
-  if(!res) return false;
+  if (!res) return false;
 
   return true;
 }
 
-async function read(MOTION){
+async function read(MOTION) {
   let opcode = [];
   let CMD;
-  var i = 0;
+  let i = 0;
 
   let res = await load_cmd(MOTION);
-  if(!res) return false;
+  if (!res) return false;
 
-  while(true){
+  for (i = 0; i < 64; i++) {
     CMD = await read_cmd(i);
     opcode.push(CMD);
-    i++;
-    if(CMD[0] == 0 && CMD[1] == 0) break;
+    if (CMD[0] == 0 && CMD[1] == 0) break;
   }
 
   return uncode(opcode, MOTION);
 }
 
-async function clearMotion(MOTION){
+async function clearMotion(MOTION) {
 
   let res = await load_cmd(MOTION);
-  if(!res) return false;
+  if (!res) return false;
 
   var j = 0;
-  for(j = 0; j < 64; j++){
+  for (j = 0; j < 64; j++) {
     res = await write_cmd(j, 0x00, 0x00);
-    if(!res) return false;
+    if (!res) return false;
   }
 
   res = await update_cmd();
-  if(!res) return false;
+  if (!res) return false;
 
   return true;
 }
 
-async function readPosition(){
+async function  readPosition(){
   let pos = [];
 
   pos[0] = await read_pos_cmd(0); // Motor x
@@ -157,10 +156,10 @@ async function readPosition(){
   return pos;
 }
 
-async function axesFree(mode){
+async function axesFree(mode) {
   let mode_;
 
-  if(mode){
+  if (mode) {
     mode_ = 1;
   } else {
     mode_ = 0;
@@ -169,14 +168,30 @@ async function axesFree(mode){
   return await axesFree_cmd(mode_);
 }
 
-async function ack(){
+async function ack() {
   return await ack_cmd();
+}
+
+async function execute(comand) {
+  let OPCODE = [];
+  let res;
+
+  OPCODE = decode([comand]);
+
+  var j = 0;
+  for (j = 0; j < OPCODE[1].length; j++) {
+    if(OPCODE[0][j] == 0x00) break;
+
+    res = await execute_cmd(OPCODE[0][j], OPCODE[1][j]);
+    if (!res) return false;
+  }
+  return true;
 }
 
 /**
  * Funções Auxiliares
  */
-function decode(CMDS){
+function decode(CMDS) {
   let OPCODE2 = [];
   let OPCODE1 = [];
   let opcodes = [];
@@ -184,9 +199,9 @@ function decode(CMDS){
   var i = 0;
   var k = 0;
 
-  for(k = 0; k < CMDS.length; k++ ){
+  for (k = 0; k < CMDS.length; k++) {
     let CMD = CMDS[k];
-    for(i in CMD){
+    for (i in CMD) {
       opcodes[k] = i;
       params[k] = CMD[i];
     }
@@ -194,37 +209,37 @@ function decode(CMDS){
 
   for (k = 0; k < opcodes.length; k++) {
     switch (opcodes[k]) {
-      case 'inicio':
-        OPCODE2.push(GOHOMEop << 4);
-        OPCODE1.push(0x00);
-        break;
-      case 'fim':
-        OPCODE2.push(GOTOop << 4 | 0x0D);
-        OPCODE1.push(0x00);
-        break;
       case 'mover':
-        var m = 0;
-        var step = [];
-        for(m in params[k]){
-          step.push(params[k][m]);
-        }
-
-        if (step[0] != 'none') {
-          OPCODE2.push(STEPop << 4 | (0x00 | (step[0] & 0x0300) >> 8) );
-          OPCODE1.push(step[0] & 0xFF);
-        }
-        if (step[1] != 'none') {
-          OPCODE2.push(STEPop << 4 | (0x04 | (step[1] & 0x0300) >> 8) );
-          OPCODE1.push(step[1] & 0xFF);
-        }
-        if (step[2] != 'none') {
-          OPCODE2.push(STEPop << 4 | (0x08 | (step[2] & 0x0300) >> 8) );
-          OPCODE1.push(step[2] & 0xFF);
-        }
-
-        if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
-          OPCODE2.push(RUNop << 4 | 1 );
+        if (params[k] == "INICIO") {
+          OPCODE2.push(GOHOMEop << 4);
           OPCODE1.push(0x00);
+        } else if(params[k] == "FIM"){
+          OPCODE2.push(GOTOop << 4 | 0x0D);
+          OPCODE1.push(0x00);
+        } else{
+          var m = 0;
+          var step = [];
+          for (m in params[k]) {
+            step.push(params[k][m]);
+          }
+
+          if (step[0] != 'none') {
+            OPCODE2.push(GOSTEPop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
+            OPCODE1.push(step[0] & 0xFF);
+          }
+          if (step[1] != 'none') {
+            OPCODE2.push(GOSTEPop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
+            OPCODE1.push(step[1] & 0xFF);
+          }
+          if (step[2] != 'none') {
+            OPCODE2.push(GOSTEPop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
+            OPCODE1.push(step[2] & 0xFF);
+          }
+
+          // if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+          //   OPCODE2.push(RUNop << 4 | 1);
+          //   OPCODE1.push(0x00);
+          // }
         }
         break;
       case 'esperar':
@@ -236,7 +251,7 @@ function decode(CMDS){
         OPCODE1.push(0x00);
         break;
       case 'desacionar':
-        OPCODE2.push(OUTop << 4 | ((params[k] & 0x07) << 1 ));
+        OPCODE2.push(OUTop << 4 | ((params[k] & 0x07) << 1));
         OPCODE1.push(0x00);
         break;
       default:
@@ -253,7 +268,8 @@ function decode(CMDS){
 function uncode(CMDS, MOTION) {
   let programa = {
     id: 0,
-    comandos: []
+    qtd_cmmds: 0,
+    cmmds: []
   };
 
   programa.id = MOTION;
@@ -267,250 +283,249 @@ function uncode(CMDS, MOTION) {
     let op_1 = CMDS[i][1];
     let opcode = (op_2 >> 4) & 0x0F;
     let len = 0;
-
     switch (opcode) {
       case GOHOMEop:
-        programa.comandos.push({ 'inicio': 'none' });
+        programa.cmmds.push({ 'mover': 'INICIO' });
         break;
       case GOTOop:
-        programa.comandos.push({ 'fim': 'none' });
+        programa.cmmds.push({ 'mover': 'FIM' });
         break;
 
       case DELAYop:
-        programa.comandos.push({ 'esperar': 0 });
-        len = programa.comandos.length;
-        programa.comandos[len - 1].esperar = Number(((op_2 & 0x0F) << 8) | op_1);
+        programa.cmmds.push({ 'esperar': 0 });
+        len = programa.cmmds.length;
+        programa.cmmds[len - 1].esperar = Number(((op_2 & 0x0F) << 8) | op_1);
         break;
 
       case OUTop:
         let mode = Number(op_2 & 0x01);
         let out = Number((op_2 >> 1) & 0x7);
-        len = programa.comandos.length;
+        len = programa.cmmds.length;
 
         if (mode == 1) {
-          programa.comandos.push({ 'acionar': 0 });
-          programa.comandos[len].acionar = out;
+          programa.cmmds.push({ 'acionar': 0 });
+          programa.cmmds[len].acionar = out;
         } else if (mode == 0) {
-          programa.comandos.push({ 'desacionar': 0 });
-          programa.comandos[len].desacionar = out;
+          programa.cmmds.push({ 'desacionar': 0 });
+          programa.cmmds[len].desacionar = out;
         }
         break;
 
-      case STEPop:
+      case GOSTEPop:
         let motor = Number((op_2 >> 2) & 0x03);
         let steps = Number(((op_2 & 0x03) << 8) | op_1);
-
         step[motor] = steps;
-        len = programa.comandos.length;
+        len = programa.cmmds.length;
 
         if (!flagStep) {
           switch (motor) {
             case 0:  // motor x
-              if (((CMDS[i + 1][0] >> 4) & 0x0F) == STEPop) {
+              if (((CMDS[i + 1][0] >> 4) & 0x0F) == GOSTEPop) {
                 op_2 = CMDS[i + 1][0];
                 op_1 = CMDS[i + 1][1];
                 motor = Number((op_2 >> 2) & 0x03);
                 steps = Number(((op_2 & 0x03) << 8) | op_1);
                 step[motor] = steps;
-                if (((CMDS[i + 2][0] >> 4) & 0x0F) == STEPop) {
+                if (((CMDS[i + 2][0] >> 4) & 0x0F) == GOSTEPop) {
                   op_2 = CMDS[i + 2][0];
                   op_1 = CMDS[i + 2][1];
                   motor = Number((op_2 >> 2) & 0x03);
                   steps = Number(((op_2 & 0x03) << 8) | op_1);
                   step[motor] = steps;
                 }
-                programa.comandos.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.comandos[len].mover.x = step[0];
-                programa.comandos[len].mover.y = step[1];
-                programa.comandos[len].mover.z = step[2];
+                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                programa.cmmds[len].mover.x = step[0];
+                programa.cmmds[len].mover.y = step[1];
+                programa.cmmds[len].mover.z = step[2];
                 flagStep = true;
               }
               break;
 
             case 1: // motor y
-              if (((CMDS[i + 1][0] >> 4) & 0x0F) == STEPop) {
+              if (((CMDS[i + 1][0] >> 4) & 0x0F) == GOSTEPop) {
                 op_2 = CMDS[i + 1][0];
                 op_1 = CMDS[i + 1][1];
                 motor = Number((op_2 >> 2) & 0x03);
                 steps = Number(((op_2 & 0x03) << 8) | op_1);
                 step[motor] = steps;
-                programa.comandos.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.comandos[len].mover.y = step[1];
-                programa.comandos[len].mover.z = step[2];
+                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                programa.cmmds[len].mover.y = step[1];
+                programa.cmmds[len].mover.z = step[2];
                 flagStep = true;
               }
               break;
 
             case 2: // motor z
-              programa.comandos.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-              programa.comandos[len].mover.z = step[2];
+              programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+              programa.cmmds[len].mover.z = step[2];
               flagStep = true;
               break;
           }
         }
         break;
     }
+    programa.qtd_cmmds = programa.cmmds.length;
   }
   return programa;
 }
 
-async function load_cmd(MOTION){
-  const CS = (0x00 -(0x3E + LOADcmd + MOTION))&0xFF;
+async function load_cmd(MOTION) {
+  const CS = (0x00 - (0x3E + LOADcmd + MOTION)) & 0xFF;
   const CMD = [0x3E, LOADcmd, MOTION, 0x00, 0x00, CS];
-  queueComand.enqueue(CMD);
-
-  const res = await waitResponse(10);
-
-  if((res[1] == LOADcmd) && (res[2] == 0xC0)){
-    return true;
-  }else{
-    return false;
-  }
-}
-
-async function execute_cmd(OPCODE1, OPCODE2){
-  const CS = (0x00 -(0x3E + EXECUTEcmd + OPCODE1 + OPCODE2 ))&0xFF;
-  const CMD = [0x3E, EXECUTEcmd, OPCODE1, OPCODE2, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == EXECUTEcmd) && (res[2] == 0xC0)){
+  if ((res[1] == LOADcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function set_param_cmd(PARAM, VALUE1, VALUE2){
-  const CS = (0x00 -(0x3E + SET_PARAMcmd + PARAM + VALUE1 + VALUE2))&0xFF;
+async function execute_cmd(OPCODE1, OPCODE2) {
+  const CS = (0x00 - (0x3E + EXECUTEcmd + OPCODE1 + OPCODE2)) & 0xFF;
+  const CMD = [0x3E, EXECUTEcmd, OPCODE1, OPCODE2, 0x00, CS];
+  queueComand.enqueue(CMD);
+
+  const res = await waitResponse(10);
+
+  if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+async function set_param_cmd(PARAM, VALUE1, VALUE2) {
+  const CS = (0x00 - (0x3E + SET_PARAMcmd + PARAM + VALUE1 + VALUE2)) & 0xFF;
   const CMD = [0x3E, SET_PARAMcmd, PARAM, VALUE1, VALUE2, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == SET_PARAMcmd) && (res[2] == 0xC0)){
+  if ((res[1] == SET_PARAMcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function write_cmd(STEP, OPCODE1, OPCODE2){
-  const CS = (0x00 -(0x3E + WRITEcmd + STEP + OPCODE1 + OPCODE2 ))&0xFF;
+async function write_cmd(STEP, OPCODE1, OPCODE2) {
+  const CS = (0x00 - (0x3E + WRITEcmd + STEP + OPCODE1 + OPCODE2)) & 0xFF;
   const CMD = [0x3E, WRITEcmd, STEP, OPCODE1, OPCODE2, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(10);
 
-  if((res[1] == WRITEcmd) && (res[2] == 0xC0)){
+  if ((res[1] == WRITEcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function update_cmd(){
-  const CS = (0x00 -(0x3E + UPDATEcmd))&0xFF;
+async function update_cmd() {
+  const CS = (0x00 - (0x3E + UPDATEcmd)) & 0xFF;
   const CMD = [0x3E, UPDATEcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(10);
 
-  if((res[1] == UPDATEcmd) && (res[2] == 0xC0)){
+  if ((res[1] == UPDATEcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function read_cmd(STEP){
-  const CS = (0x00 -(0x3E + READcmd))&0xFF;
-  const CMD = [0x3E, READcmd, 0x00, 0x00, 0x00, CS];
+async function read_cmd(STEP) {
+  const CS = (0x00 - (0x3E + READcmd + STEP)) & 0xFF;
+  const CMD = [0x3E, READcmd, STEP, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(10);
 
-  if((res[1] == READcmd) && (res[2] == 0xC0)){
+  if ((res[1] == READcmd) && (res[2] == 0xC0)) {
     return [res[3], res[4]];
-  }else{
+  } else {
     return false;
   }
 }
 
-async function read_pos_cmd(MOTOR){
-  const CS = (0x00 -(0x3E + READ_POScmd + MOTOR))&0xFF;
+async function read_pos_cmd(MOTOR) {
+  const CS = (0x00 - (0x3E + READ_POScmd + MOTOR)) & 0xFF;
   const CMD = [0x3E, READ_POScmd, MOTOR, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == READ_POScmd) && (res[2] == 0xC0)){
+  if ((res[1] == READ_POScmd) && (res[2] == 0xC0)) {
     let pos = Number((res[3] << 8) | res[4]);
     return pos;
-  }else{
-    return false;
+  } else {
+    return 0;
   }
 }
 
-async function run_cmd(MOTION){
-  const CS = (0x00 -(0x3E + RUNcmd + MOTION))&0xFF;
+async function run_cmd(MOTION) {
+  const CS = (0x00 - (0x3E + RUNcmd + MOTION)) & 0xFF;
   const CMD = [0x3E, RUNcmd, MOTION, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == RUNcmd) && (res[2] == 0xC0)){
+  if ((res[1] == RUNcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function stop_cmd(){
-  const CS = (0x00 -(0x3E + STOPcmd ))&0xFF;
+async function stop_cmd() {
+  const CS = (0x00 - (0x3E + STOPcmd)) & 0xFF;
   const CMD = [0x3E, STOPcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == STOPcmd) && (res[2] == 0xC0)){
+  if ((res[1] == STOPcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-async function ack_cmd(){
-  const CS = (0x00 -(0x3E + ACKcmd))&0xFF;
+async function ack_cmd() {
+  const CS = (0x00 - (0x3E + ACKcmd)) & 0xFF;
   const CMD = [0x3E, ACKcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == ACKcmd) && (res[2] == 0xC0)){
+  if ((res[1] == ACKcmd) && (res[2] == 0xC0)) {
     return res[3];
-  }else{
+  } else {
     return false;
   }
 }
 
-async function axesFree_cmd(mode){
-  const CS = (0x00 -(0x3E + AXES_FREEcmd + mode))&0xFF;
+async function axesFree_cmd(mode) {
+  const CS = (0x00 - (0x3E + AXES_FREEcmd + mode)) & 0xFF;
   const CMD = [0x3E, AXES_FREEcmd, mode, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
   const res = await waitResponse(100);
 
-  if((res[1] == AXES_FREEcmd) && (res[2] == 0xC0)){
+  if ((res[1] == AXES_FREEcmd) && (res[2] == 0xC0)) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
 
-function waitResponse(time){
+function waitResponse(time) {
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       if (!queueResponse.isEmpty()) {
@@ -535,5 +550,6 @@ module.exports = {
   clearMotion,
   readPosition,
   ack,
-  axesFree
+  axesFree,
+  execute
 }

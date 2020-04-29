@@ -1,25 +1,17 @@
-import mongoose from 'mongoose';
+const { Schema, model } = require('mongoose');
 
-const motionSchema = new mongoose.Schema({
-  Nome_modelo: {
-    type: String,
-    required: true,
-  },
-  Qtde_pontos: {
+const motionSchema = new Schema({
+  id: {
     type: Number,
     required: true,
   },
-  Motions: {
-    type: [{
-      Tempo: {
-        type: Number,
-        required: true,
-      },
-      Ponto: {
-        type: [Number],
-        required: true,
-      }
-    }],
+  qtd_cmmds: {
+    type: Number,
+    required: true,
+  },
+  cmmds: {
+    type: Array,
+    require: true,
   },
   createdAt: {
     type: Date,
@@ -27,4 +19,5 @@ const motionSchema = new mongoose.Schema({
   },
 });
 
-mongoose.model('motions', motionSchema);
+module.exports = model('motions', motionSchema);
+

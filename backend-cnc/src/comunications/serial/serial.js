@@ -25,8 +25,13 @@ async function serial() {
 
   /* Evento de leitura de serial */
   parser.on('data', data => {
-    console.log(data);
-    queueResponse.enqueue(data);
+    let arr = [];
+    if(data.length == 6){
+      let i = 0;
+      for(i;i < 6;i++) arr[i] = data[i];
+    }
+    // console.log(`Recebido: [${arr}]`);
+    queueResponse.enqueue(arr);
   });
 
   port.on("close", () => {
@@ -37,9 +42,16 @@ async function serial() {
   });
 
   setInterval(() => {
+    let sendData;
     if (!queueComand.isEmpty()) {
-      console.log(queueComand.peek());
-      //port.write(0xff);
+      sendData = queueComand.peek();
+      // console.log(`Enviado: [${sendData}]`);
+      port.write([sendData[0]]);
+      port.write([sendData[1]]);
+      port.write([sendData[2]]);
+      port.write([sendData[3]]);
+      port.write([sendData[4]]);
+      port.write([sendData[5]]);
       queueComand.dequeue();
     }
   }, 100);
