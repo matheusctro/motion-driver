@@ -44,18 +44,22 @@
 }
 
 .points-interaction-container {
-    outline: 1px solid red;
-    /* width: 50%; */
+    /* outline: 1px solid red; */
+    width: 65%;
     min-width: 500px;
     min-height: 430px;
     margin-top: 10px;
 }
 
 .commands-interaction-container {
-    outline: 1px solid blue;
-    min-width: 400px;
-    
+    /* outline: 1px solid blue; */
+    /* min-width: 400px; */
+    width: 35%;
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .points-config {
@@ -76,15 +80,27 @@
 }
 
 .real-time-graphic {
-    outline: 1px solid blue;
+    /* outline: 1px solid blue; */
     width: 50%;
     min-width: 450px;
+    padding-right: 50px;
     height: inherit;
 }
 
-.joystick {
-    outline: 2px solid black;
+.points {
+    /* outline: 2px solid black; */
     width: 50%;
+    min-width: 330px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 25px;
+    /* justify-content: center; */
+}
+
+.joystick {
+    /* outline: 2px solid black; */
+    width: 100%;
     min-width: 330px;
     height: inherit;
     display: flex;
@@ -100,7 +116,7 @@
 }
 
 .joystick #xy-direction {
-    /* outline: 1px solid salmon; */
+    /* background-color: salmon; */
     min-width: 70%;
     display: flex;
     align-items: center;
@@ -115,17 +131,19 @@
     margin: 25% 0 25% 0;
 }
 
-/* .horizontalbtns #left {
-    display: flex;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    text-align: right !important;
-} */
-
 .verticalbtns {
     /* outline: 2px solid gray; */
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 25% 0 25% 0;
+}
+
+.btn-actions {
+    /* background-color: salmon; */
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }

@@ -124,33 +124,42 @@ const Configure = (props) => {
                                     <div className="real-time-graphic">
                                         <Graph />
                                     </div>
-                                    <div className="joystick">
-                                        <div id="z-direction">
-                                            <Button className={classes.joystickbtns}>+Z<ArrowUpwardIcon /></Button>
-                                            <Button className={classes.joystickbtns}>-Z<ArrowDownwardIcon /></Button>
-                                        </div>
-                                        <div id="xy-direction">
-                                            <div className="horizontalbtns" id="left">
-                                                <Button className={classes.joystickbtns}>-X<ArrowBackIcon /></Button>
+                                    <div className="points">
+                                        <button className="btn-calibration" style={{width: '90%'}}>Home</button>
+                                        <div className="joystick">
+                                            <div id="z-direction">
+                                                <Button className={classes.joystickbtns}>+Z<ArrowUpwardIcon /></Button>
+                                                <Button className={classes.joystickbtns}>-Z<ArrowDownwardIcon /></Button>
                                             </div>
-                                            
-                                            <div className="verticalbtns">
-                                                <Button className={classes.joystickbtns}>+Y<ArrowUpwardIcon /></Button>
-                                                <Button className={classes.joystickbtns}>-Y<ArrowDownwardIcon /></Button>
-                                            </div>
+                                            <div id="xy-direction">
+                                                <div className="horizontalbtns" id="left">
+                                                    <Button className={classes.joystickbtns}>-X<ArrowBackIcon /></Button>
+                                                </div>
+                                                
+                                                <div className="verticalbtns">
+                                                    <Button className={classes.joystickbtns}>+Y<ArrowUpwardIcon /></Button>
+                                                    <Button className={classes.joystickbtns}>-Y<ArrowDownwardIcon /></Button>
+                                                </div>
 
-                                            <div className="horizontalbtns">
-                                                <Button className={classes.joystickbtns}>+X<ArrowForwardIcon /></Button>
+                                                <div className="horizontalbtns">
+                                                    <Button className={classes.joystickbtns}>+X<ArrowForwardIcon /></Button>
+                                                </div>
                                             </div>
                                         </div>
+                                        <button className="btn-calibration" style={{width: '90%'}}>Guardar Ponto</button>
                                     </div>
                                 </div>
                                 
-                                <button>Guardar Ponto</button>
+                                
                             </div>
 
                             <div className="commands-interaction-container">
                                 <ProgramTable />
+                                <button className="btn-calibration" style={{width: '90%'}}>Novo Comando</button>
+                                <div className="btn-actions">
+                                    <button className="btn-calibration" style={{width: '45%', backgroundColor: 'rgb(20, 255, 98)'}}>Salvar</button> 
+                                    <button className="btn-calibration" style={{width: '45%', backgroundColor: 'red'}}>Cancelar</button> 
+                                </div>
                             </div>
                         </div>            
                     </Paper>
