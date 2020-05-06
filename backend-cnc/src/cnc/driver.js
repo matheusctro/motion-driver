@@ -11,14 +11,17 @@ const READ_POScmd = 0xAA;
 const AXES_FREEcmd = 0xAB;
 
 /** Opcodes */
+const DIRop = 0x1;
 const RUNop = 0x2;
 const OUTop = 0x3;
 const GOTOop = 0x4;
 const GOHOMEop = 0x5;
 const STEPop = 0x8;
-const GOCMop = 0x9;
+const GOMMop = 0x9;
 const GOSTEPop = 0xA;
 const DELAYop = 0xC;
+const MMop = 0xD;
+const MM_ABSop = 0xE;
 
 /** Endereço de mémoria da eeprom do microcontrolador */
 const PARAM_X = 36;
@@ -49,7 +52,7 @@ async function step(motor, step, mode) {
   if (motor == 'z') motor_ = 2;
 
   if (mode) {  // cm
-    opcode1 = Number((GOCMop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
+    opcode1 = Number((GOMMop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
     opcode0 = Number(step & 0xFF);
   } else {    // step
     opcode1 = Number((GOSTEPop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
@@ -159,10 +162,10 @@ async function  readPosition(){
 async function axesFree(mode) {
   let mode_;
 
-  if (mode) {
-    mode_ = 1;
+  if (mode == "true") {
+    mode_ = 0x01;
   } else {
-    mode_ = 0;
+    mode_ = 0x00;
   }
 
   return await axesFree_cmd(mode_);
@@ -213,35 +216,88 @@ function decode(CMDS) {
         if (params[k] == "INICIO") {
           OPCODE2.push(GOHOMEop << 4);
           OPCODE1.push(0x00);
-        } else if(params[k] == "FIM"){
+        } else if (params[k] == "FIM") {
           OPCODE2.push(GOTOop << 4 | 0x0D);
           OPCODE1.push(0x00);
-        } else{
-          var m = 0;
-          var step = [];
+        } else {
+          let m = 0;
+          let step = [];
+          let dir;
           for (m in params[k]) {
             step.push(params[k][m]);
           }
 
           if (step[0] != 'none') {
-            OPCODE2.push(GOSTEPop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
+            if(step[0] > 0){
+              OPCODE2.push(DIRop << 4 | 0x01);
+              OPCODE1.push(0x00);
+            }else{
+              OPCODE2.push(DIRop << 4 | 0x00);
+              OPCODE1.push(0x00);
+            }
+          }
+          if (step[1] != 'none') {
+            if(step[1] > 0){
+              OPCODE2.push(DIRop << 4 | 0x05);
+              OPCODE1.push(0x00);
+            }else{
+              OPCODE2.push(DIRop << 4 | 0x04);
+              OPCODE1.push(0x00);
+            }
+          }
+          if (step[2] != 'none') {
+            if(step[2] > 0){
+              OPCODE2.push(DIRop << 4 | 0x09);
+              OPCODE1.push(0x00);
+            }else{
+              OPCODE2.push(DIRop << 4 | 0x08);
+              OPCODE1.push(0x00);
+            }
+          }
+          if (step[0] != 'none') {
+            OPCODE2.push(MMop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
             OPCODE1.push(step[0] & 0xFF);
           }
           if (step[1] != 'none') {
-            OPCODE2.push(GOSTEPop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
+            OPCODE2.push(MMop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
             OPCODE1.push(step[1] & 0xFF);
           }
           if (step[2] != 'none') {
-            OPCODE2.push(GOSTEPop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
+            OPCODE2.push(MMop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
             OPCODE1.push(step[2] & 0xFF);
           }
-
-          // if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
-          //   OPCODE2.push(RUNop << 4 | 1);
-          //   OPCODE1.push(0x00);
-          // }
+          if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+            OPCODE2.push(RUNop << 4 | 1);
+            OPCODE1.push(0x00);
+          }
         }
         break;
+
+      case 'mover_abs':
+        let m = 0;
+        let step = [];
+        for (m in params[k]) {
+          step.push(params[k][m]);
+        }
+
+        if (step[0] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
+          OPCODE1.push(step[0] & 0xFF);
+        }
+        if (step[1] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
+          OPCODE1.push(step[1] & 0xFF);
+        }
+        if (step[2] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
+          OPCODE1.push(step[2] & 0xFF);
+        }
+        if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+          OPCODE2.push(RUNop << 4 | 1);
+          OPCODE1.push(0x00);
+        }
+        break;
+
       case 'esperar':
         OPCODE2.push(DELAYop << 4 | ((params[k] & 0x0F00) >> 8));
         OPCODE1.push(params[k] & 0xFF);
@@ -261,7 +317,6 @@ function decode(CMDS) {
   }
   OPCODE2.push(0x00);
   OPCODE1.push(0x00);
-
   return [OPCODE2, OPCODE1];
 }
 
@@ -271,22 +326,40 @@ function uncode(CMDS, MOTION) {
     qtd_cmmds: 0,
     cmmds: []
   };
-
   programa.id = MOTION;
 
-  let step = [0, 0, 0];
-  let flagStep = false;
-  let i = 0;
+  let GOMM = [0, 0, 0];
+  let flagGOMM = false;
+  let contGOMM = 0;
+  let valueGOMM = 0;
 
+  let MM_ABS = [0, 0, 0];
+  let flagMM_ABS = false;
+  let contMM_ABS = 0;
+  let valueMM_ABS = 0;
+
+  let MM = [0, 0, 0];
+  let DIR = [1, 1, 1];
+  let flagMM = false;
+  let contMM = 0;
+  let valueMM = 0;
+
+  let i = 0;
   for (i = 0; i < CMDS.length; i++) {
     let op_2 = CMDS[i][0];
     let op_1 = CMDS[i][1];
     let opcode = (op_2 >> 4) & 0x0F;
+
     let len = 0;
+    let motor;
+    let steps;
+    let end = false;
+
     switch (opcode) {
       case GOHOMEop:
         programa.cmmds.push({ 'mover': 'INICIO' });
         break;
+
       case GOTOop:
         programa.cmmds.push({ 'mover': 'FIM' });
         break;
@@ -311,61 +384,276 @@ function uncode(CMDS, MOTION) {
         }
         break;
 
-      case GOSTEPop:
-        let motor = Number((op_2 >> 2) & 0x03);
-        let steps = Number(((op_2 & 0x03) << 8) | op_1);
-        step[motor] = steps;
+      case DIRop:
+        let dir = Number(op_2 & 0x01);
+        motor = Number((op_2 >> 2) & 0x03);
+        DIR[motor] = dir;
+        break;
+
+      case MMop:
+        motor = Number((op_2 >> 2) & 0x03);
+        steps = Number(((op_2 & 0x03) << 8) | op_1);
+        MM = ['none', 'none', 'none'];
+        MM[motor] = steps;
         len = programa.cmmds.length;
 
-        if (!flagStep) {
+        contMM ++;
+        if((contMM > valueMM ) && flagMM ){
+          flagMM = false;
+        }
+        end = false;
+
+        if (!flagMM) {
           switch (motor) {
             case 0:  // motor x
-              if (((CMDS[i + 1][0] >> 4) & 0x0F) == GOSTEPop) {
+              if (((CMDS[i + 1][0] >> 4) & 0x0F) == MMop) {
                 op_2 = CMDS[i + 1][0];
                 op_1 = CMDS[i + 1][1];
+
                 motor = Number((op_2 >> 2) & 0x03);
                 steps = Number(((op_2 & 0x03) << 8) | op_1);
-                step[motor] = steps;
-                if (((CMDS[i + 2][0] >> 4) & 0x0F) == GOSTEPop) {
+                MM[motor] = DIR[motor]*steps;
+
+                if (((CMDS[i + 2][0] >> 4) & 0x0F) == MMop) {
                   op_2 = CMDS[i + 2][0];
                   op_1 = CMDS[i + 2][1];
                   motor = Number((op_2 >> 2) & 0x03);
                   steps = Number(((op_2 & 0x03) << 8) | op_1);
-                  step[motor] = steps;
+                  MM[motor] = DIR[motor]*steps;
+                  if(((CMDS[i + 3][0] >> 4) & 0x0F) == RUNop) {
+                    end = true;
+                    flagMM = true;
+                    contMM = 0;
+                    valueMM = 2;
+                  }
+                }else if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
+                  end = true;
+                  flagMM = true;
+                  contMM = 0;
+                  valueMM = 1;
                 }
+              }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                end = true;
+              }
+
+              if(end){
                 programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.cmmds[len].mover.x = step[0];
-                programa.cmmds[len].mover.y = step[1];
-                programa.cmmds[len].mover.z = step[2];
-                flagStep = true;
+                programa.cmmds[len].mover.x = DIR[0]*MM[0];
+                programa.cmmds[len].mover.y = MM[1];
+                programa.cmmds[len].mover.z = MM[2];
               }
               break;
 
             case 1: // motor y
-              if (((CMDS[i + 1][0] >> 4) & 0x0F) == GOSTEPop) {
+              if (((CMDS[i + 1][0] >> 4) & 0x0F) == MMop) {
                 op_2 = CMDS[i + 1][0];
                 op_1 = CMDS[i + 1][1];
                 motor = Number((op_2 >> 2) & 0x03);
                 steps = Number(((op_2 & 0x03) << 8) | op_1);
-                step[motor] = steps;
+                MM[motor] = DIR[motor]*steps;
+
+                if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
+                  end = true;
+                  flagMM = true;
+                  contMM = 0;
+                  valueMM = 1;
+                }
+              }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                end = true;
+              }
+
+              if(end){
                 programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.cmmds[len].mover.y = step[1];
-                programa.cmmds[len].mover.z = step[2];
-                flagStep = true;
+                programa.cmmds[len].mover.y = DIR[1]*MM[1];
+                programa.cmmds[len].mover.z = MM[2];
               }
               break;
 
             case 2: // motor z
-              programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-              programa.cmmds[len].mover.z = step[2];
-              flagStep = true;
+              if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                programa.cmmds[len].mover.z = DIR[2]*MM[2];
+              }
+              break;
+          }
+        }
+        break;
+
+        case MM_ABSop:
+          motor = Number((op_2 >> 2) & 0x03);
+          steps = Number(((op_2 & 0x03) << 8) | op_1);
+          MM_ABS = ['none', 'none', 'none'];
+          MM_ABS[motor] = steps;
+          len = programa.cmmds.length;
+
+          contMM_ABS ++;
+          if((contMM_ABS > valueMM_ABS ) && flagMM_ABS ){
+            flagMM_ABS = false;
+          }
+          end = false;
+
+          if (!flagMM_ABS) {
+            switch (motor) {
+              case 0:  // motor x
+                if (((CMDS[i + 1][0] >> 4) & 0x0F) == MM_ABSop) {
+                  op_2 = CMDS[i + 1][0];
+                  op_1 = CMDS[i + 1][1];
+
+                  motor = Number((op_2 >> 2) & 0x03);
+                  steps = Number(((op_2 & 0x03) << 8) | op_1);
+                  MM_ABS[motor] = steps;
+
+                  if (((CMDS[i + 2][0] >> 4) & 0x0F) == MM_ABSop) {
+                    op_2 = CMDS[i + 2][0];
+                    op_1 = CMDS[i + 2][1];
+                    motor = Number((op_2 >> 2) & 0x03);
+                    steps = Number(((op_2 & 0x03) << 8) | op_1);
+                    MM_ABS[motor] = steps;
+                    if(((CMDS[i + 3][0] >> 4) & 0x0F) == RUNop) {
+                      end = true;
+                      flagMM_ABS = true;
+                      contMM_ABS = 0;
+                      valueMM_ABS = 2;
+                    }
+                  }else if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
+                    end = true;
+                    flagMM_ABS = true;
+                    contMM_ABS = 0;
+                    valueMM_ABS = 1;
+                  }
+                }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                  end = true;
+                }
+
+                if(end){
+
+                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover_abs.x = MM_ABS[0];
+                  programa.cmmds[len].mover_abs.y = MM_ABS[1];
+                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                }
+                break;
+
+              case 1: // motor y
+                if (((CMDS[i + 1][0] >> 4) & 0x0F) == MM_ABSop) {
+                  op_2 = CMDS[i + 1][0];
+                  op_1 = CMDS[i + 1][1];
+                  motor = Number((op_2 >> 2) & 0x03);
+                  steps = Number(((op_2 & 0x03) << 8) | op_1);
+                  MM_ABS[motor] = steps;
+
+                  if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
+                    end = true;
+                    flagMM_ABS = true;
+                    contMM_ABS = 0;
+                    valueMM_ABS = 1;
+                  }
+                }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                  end = true;
+                }
+
+                if(end){
+                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover_abs.y = MM_ABS[1];
+                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                }
+                break;
+
+              case 2: // motor z
+                if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
+                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                }
+                break;
+            }
+          }
+          break;
+
+      case GOMMop:
+        motor = Number((op_2 >> 2) & 0x03);
+        steps = Number(((op_2 & 0x03) << 8) | op_1);
+
+        GOMM = ['none', 'none', 'none'];
+        GOMM[motor] = steps;
+        len = programa.cmmds.length;
+
+        contGOMM ++;
+        if((contGOMM > valueGOMM ) && flagGOMM ){
+          flagGOMM = false;
+        }
+
+
+        if (!flagGOMM) {
+          switch (motor) {
+            case 0:  // motor x
+              op_2 = CMDS[i + 1][0];
+              op_1 = CMDS[i + 1][1];
+              motor = Number((op_2 >> 2) & 0x03);
+              if ((((op_2 >> 4) & 0x0F) == GOMMop) && (motor == 1)) { //motor y
+                steps = Number(((op_2 & 0x03) << 8) | op_1);
+                GOMM[motor] = steps;
+
+
+
+                op_2 = CMDS[i + 2][0];
+                op_1 = CMDS[i + 2][1];
+                motor = Number((op_2 >> 2) & 0x03);
+                if ((((op_2 >> 4) & 0x0F) == GOMMop) && (motor == 2)) { //motor z
+                  steps = Number(((op_2 & 0x03) << 8) | op_1);
+                  GOMM[motor] = steps;
+
+                  flagGOMM = true;
+                  valueGOMM = 2;
+                  contGOMM = 0;
+                }else{
+                  flagGOMM = true;
+                  valueGOMM = 1;
+                  contGOMM = 0;
+                }
+              } else if ((((op_2 >> 4) & 0x0F) == GOMMop) && (motor == 2)) { //motor z
+                steps = Number(((op_2 & 0x03) << 8) | op_1);
+                GOMM[motor] = steps;
+
+                flagGOMM = true;
+                valueGOMM = 1;
+                contGOMM = 0;
+              }
+
+              programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+              programa.cmmds[len].mover_abs.x = GOMM[0];
+              programa.cmmds[len].mover_abs.y = GOMM[1];
+              programa.cmmds[len].mover_abs.z = GOMM[2];
+              break;
+
+            case 1: // motor y
+              op_2 = CMDS[i + 1][0];
+              op_1 = CMDS[i + 1][1];
+              motor = Number((op_2 >> 2) & 0x03);
+              if ((((op_2 >> 4) & 0x0F) == GOMMop) && (motor == 2)) { //motor z
+                steps = Number(((op_2 & 0x03) << 8) | op_1);
+                GOMM[motor] = steps;
+                programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                programa.cmmds[len].mover_abs.y = GOMM[1];
+                programa.cmmds[len].mover_abs.z = GOMM[2];
+
+                flagGOMM = true;
+                contGOMM = 0;
+                valueGOMM = 1;
+              }
+              break;
+
+            case 2: // motor z
+              programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+              programa.cmmds[len].mover_abs.z = GOMM[2];
               break;
           }
         }
         break;
     }
-    programa.qtd_cmmds = programa.cmmds.length;
   }
+
+  programa.qtd_cmmds = programa.cmmds.length;
+
   return programa;
 }
 
@@ -523,7 +811,6 @@ async function axesFree_cmd(mode) {
     return false;
   }
 }
-
 
 function waitResponse(time) {
   return new Promise((resolve) => {

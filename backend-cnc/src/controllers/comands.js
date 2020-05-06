@@ -8,17 +8,19 @@ module.exports = {
     let i = 0;
     for(i = 0; i < Number(runParam.repetition); i++){
       response = await run(Number(runParam.id));
+      if(i == 0){
+        if (response)
+        res.json({ "status": "ok" });
+      else
+        res.status(400).json({ "error": "Can't RUN" });
+      }
     }
-
-    if (response)
-      return res.json({ "status": "ok" });
-    else
-      return res.status(400).json({ "error": "Can't RUN" });
+    return;
   },
 
   async stop(req, res) {
     let response = await stop();
-    console.log(response);
+    // console.log(response);
 
     if(response)
       return res.json({"status": "ok"});
@@ -28,7 +30,7 @@ module.exports = {
 
   async home(req, res) {
     let response = await goHome();
-    console.log(response);
+    // console.log(response);
 
     if(response)
       return res.json({"status": "ok"});
@@ -62,8 +64,9 @@ module.exports = {
 
   async freeAxis(req, res) {
     const param = req.query;
+   // console.log(param);
     let response = await axesFree(param.value);
-    console.log(response);
+    // console.log(response);
 
     if (response)
       return res.json({ "status": "ok" });

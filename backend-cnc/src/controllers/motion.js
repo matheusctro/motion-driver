@@ -46,6 +46,8 @@ module.exports = {
     let prog = await read(motion.id);
 
     if(motion.id == prog.id && motion.qtd_cmmds == prog.qtd_cmmds && motion.cmmds.length == prog.cmmds.length){
+      console.log(prog);
+      console.log(prog);
       console.log("Escrita com sucesso!");
     }else{
       console.log("Escrita sem sucesso!");

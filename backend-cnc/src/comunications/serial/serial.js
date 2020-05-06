@@ -30,7 +30,7 @@ async function serial() {
       let i = 0;
       for(i;i < 6;i++) arr[i] = data[i];
     }
-    // console.log(`Recebido: [${arr}]`);
+    console.log(`Recebido: [${arr}]`);
     queueResponse.enqueue(arr);
   });
 
@@ -45,7 +45,7 @@ async function serial() {
     let sendData;
     if (!queueComand.isEmpty()) {
       sendData = queueComand.peek();
-      // console.log(`Enviado: [${sendData}]`);
+      console.log(`Enviado: [${sendData}]`);
       port.write([sendData[0]]);
       port.write([sendData[1]]);
       port.write([sendData[2]]);
@@ -56,16 +56,6 @@ async function serial() {
     }
   }, 100);
 
-  // setInterval(() => {
-  //   console.log('Run:');
-  //   let cs = [(0x00 -(0x3E + 0xA7 + 0x0A))&0xFF];
-  //   port.write([0x3E]);
-  //   port.write([0xA7])
-  //   port.write([0x0A]);
-  //   port.write([0x00]);
-  //   port.write([0x00]);
-  //   port.write(cs);
-  // },10000);
 }
 
 export default serial;
