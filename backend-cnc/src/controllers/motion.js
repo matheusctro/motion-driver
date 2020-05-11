@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Motion from '../models/motion';
 
 import { write, read, clearMotion} from '../cnc/driver';
+import {setAllow} from '../comunications/serial/allow'
 
 module.exports = {
   async index(req, res) {
@@ -42,6 +43,7 @@ module.exports = {
       });
       response = res.json({"status": "ok"});
     }
+    setAllow(false);
     await write(motion);
     let prog = await read(motion.id);
 
@@ -57,6 +59,7 @@ module.exports = {
       //   console.log("Escrita com sucesso!");
       // }
     }
+    setAllow(true);
     return response;
   },
   async clear(req, res) {
@@ -76,6 +79,7 @@ module.exports = {
       response = res.status(400).json({ "error": "Motion not exists" });
     }
 
+    setAllow(false);
     let resp = await clearMotion(Number(motion.id));
 
     if(resp){
@@ -90,8 +94,10 @@ module.exports = {
     }else{
       console.log("Falha na limpeza do Motion!")
     }
+    setAllow(true);
     return response;
   },
+
   async delete(req, res) {
     const deleteMotion = req.query;
     const motionDeletado = await Motion.findOne({ id: deleteMotion.id });

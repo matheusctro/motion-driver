@@ -39,7 +39,6 @@ async function goHome() {
   return await execute_cmd(0x50, 0x00);
 }
 
-//Mandar valor absoluto e não incremental.
 async function step(motor, step, mode) {
   let opcode1 = 0x00;
   let opcode0 = 0x00;
@@ -662,7 +661,7 @@ async function load_cmd(MOTION) {
   const CMD = [0x3E, LOADcmd, MOTION, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == LOADcmd) && (res[2] == 0xC0)) {
     return true;
@@ -676,7 +675,7 @@ async function execute_cmd(OPCODE1, OPCODE2) {
   const CMD = [0x3E, EXECUTEcmd, OPCODE1, OPCODE2, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(10);
+  const res = await waitResponse(70);
 
   if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -690,7 +689,7 @@ async function set_param_cmd(PARAM, VALUE1, VALUE2) {
   const CMD = [0x3E, SET_PARAMcmd, PARAM, VALUE1, VALUE2, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == SET_PARAMcmd) && (res[2] == 0xC0)) {
     return true;
@@ -704,7 +703,7 @@ async function write_cmd(STEP, OPCODE1, OPCODE2) {
   const CMD = [0x3E, WRITEcmd, STEP, OPCODE1, OPCODE2, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(10);
+  const res = await waitResponse(70);
 
   if ((res[1] == WRITEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -718,7 +717,7 @@ async function update_cmd() {
   const CMD = [0x3E, UPDATEcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(10);
+  const res = await waitResponse(70);
 
   if ((res[1] == UPDATEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -732,7 +731,7 @@ async function read_cmd(STEP) {
   const CMD = [0x3E, READcmd, STEP, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(10);
+  const res = await waitResponse(70);
 
   if ((res[1] == READcmd) && (res[2] == 0xC0)) {
     return [res[3], res[4]];
@@ -746,7 +745,7 @@ async function read_pos_cmd(MOTOR) {
   const CMD = [0x3E, READ_POScmd, MOTOR, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == READ_POScmd) && (res[2] == 0xC0)) {
     let pos = Number((res[3] << 8) | res[4]);
@@ -761,7 +760,7 @@ async function run_cmd(MOTION) {
   const CMD = [0x3E, RUNcmd, MOTION, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == RUNcmd) && (res[2] == 0xC0)) {
     return true;
@@ -775,7 +774,7 @@ async function stop_cmd() {
   const CMD = [0x3E, STOPcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == STOPcmd) && (res[2] == 0xC0)) {
     return true;
@@ -789,7 +788,7 @@ async function ack_cmd() {
   const CMD = [0x3E, ACKcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == ACKcmd) && (res[2] == 0xC0)) {
     return res[3];
@@ -803,7 +802,7 @@ async function axesFree_cmd(mode) {
   const CMD = [0x3E, AXES_FREEcmd, mode, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(100);
+  const res = await waitResponse(70);
 
   if ((res[1] == AXES_FREEcmd) && (res[2] == 0xC0)) {
     return true;

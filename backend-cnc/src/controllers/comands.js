@@ -1,7 +1,9 @@
 import { calibration, goHome, stop, run, setSize, readPosition, ack, axesFree , execute } from '../cnc/driver';
+import {setAllow} from '../comunications/serial/allow'
 
 module.exports = {
   async run(req, res) {
+    setAllow(false);
     const runParam = req.query;
     let response;
 
@@ -15,13 +17,16 @@ module.exports = {
         res.status(400).json({ "error": "Can't RUN" });
       }
     }
+    setAllow(true);
     return;
   },
 
   async stop(req, res) {
+    setAllow(false);
     let response = await stop();
     // console.log(response);
 
+    setAllow(true);
     if(response)
       return res.json({"status": "ok"});
     else
@@ -29,9 +34,10 @@ module.exports = {
   },
 
   async home(req, res) {
+    setAllow(false);
     let response = await goHome();
     // console.log(response);
-
+    setAllow(true);
     if(response)
       return res.json({"status": "ok"});
     else
@@ -39,10 +45,10 @@ module.exports = {
   },
 
   async position(req, res) {
-
+    setAllow(false);
     let response = await readPosition();
     console.log(response);
-
+    setAllow(true);
     if(!response)
       return res.status(400).json({ "error": "Can't read position" });
 
@@ -51,11 +57,11 @@ module.exports = {
 
   async calibration(req, res) {
     const Param = req.query;
-
+    setAllow(false);
     let response = await setSize(Param.sizeX, Param.sizeY, Param.sizeZ);
 
     response = await calibration();
-
+    setAllow(true);
     if(response)
       return res.json({"status": "ok"});
     else
@@ -63,11 +69,12 @@ module.exports = {
   },
 
   async freeAxis(req, res) {
+    setAllow(false);
     const param = req.query;
    // console.log(param);
     let response = await axesFree(param.value);
     // console.log(response);
-
+    setAllow(true);
     if (response)
       return res.json({ "status": "ok" });
     else
@@ -75,9 +82,11 @@ module.exports = {
   },
 
   async execute(req,res){
+    setAllow(false);
     const param = req.body;
     let response = await execute(param);
 
+    setAllow(true);
     if (response)
       return res.json({ "status": "ok" });
     else

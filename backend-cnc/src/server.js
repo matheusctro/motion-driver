@@ -4,7 +4,10 @@ import cors from 'cors';
 import morgan from 'morgan';
 import routes from './routes';
 import serial from './comunications/serial/serial';
-import {calibration, goHome, step, stop, run, setSize, write, read, clearMotion, readPosition, ack, axesFree} from './cnc/driver';
+import {readPosition,ack} from './cnc/driver';
+import {setAllow, readAllow} from './comunications/serial/allow'
+import queueComand from './Queue/queueComand';
+import queueResponse from './Queue/queueResponse';
 
 dotenv.config();
 
@@ -38,6 +41,25 @@ app.get('/', (req, res) => {
 app.listen(process.env.PORT, () => console.log(`Listening on PORT ${process.env.PORT}`));
 
 serial();
+
+setInterval(async () => {
+  let encoder;
+  if(readAllow()){
+    setAllow(false);
+    encoder = await readPosition();
+    setAllow(true);
+    // encoder = await ack();
+    console.log(encoder);
+  }
+}, 1500);
+
+setInterval(async () => {
+  if(readAllow()){
+    queueComand.clear();
+    queueResponse.clear();
+  }
+}, 10000);
+
 
 // // clearMotion(9);
 // // console.log(read(9));
