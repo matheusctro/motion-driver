@@ -1,0 +1,29 @@
+.sidebar-padding-top {
+    height: 100%;
+    padding-top: 50px;
+    background-color: #3656AF;
+    padding-left: 20px;
+}
+
+.sidebar-link-button {
+    width: 100% !important;
+    padding: 30px !important;
+    color: white !important;
+    display: flex !important;
+    border-radius: 0px !important;
+    justify-content: left !important;
+    border-left: 4px solid transparent !important;
+}
+
+.sidebar-link-button:hover {
+    border-left: 4px solid white !important;
+}
+
+.logo-icts {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    bottom: 50px;
+    left: 45%;
+    transform: translateX(-50%);
+}
