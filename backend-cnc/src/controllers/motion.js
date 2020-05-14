@@ -3,6 +3,8 @@ import Motion from '../models/motion';
 
 import { write, read, clearMotion} from '../cnc/driver';
 import {setAllow} from '../comunications/serial/allow'
+import queueComand from '../Queue/queueComand';
+import queueResponse from '../Queue/queueResponse';
 
 module.exports = {
   async index(req, res) {
@@ -44,6 +46,8 @@ module.exports = {
       response = res.json({"status": "ok"});
     }
     setAllow(false);
+    queueComand.clear();
+    queueResponse.clear();
     await write(motion);
     let prog = await read(motion.id);
 

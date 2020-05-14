@@ -16,6 +16,7 @@ const RUNop = 0x2;
 const OUTop = 0x3;
 const GOTOop = 0x4;
 const GOHOMEop = 0x5;
+const WAITFORop = 0x7;
 const STEPop = 0x8;
 const GOMMop = 0x9;
 const GOSTEPop = 0xA;
@@ -309,6 +310,18 @@ function decode(CMDS) {
         OPCODE2.push(OUTop << 4 | ((params[k] & 0x07) << 1));
         OPCODE1.push(0x00);
         break;
+      case 'confirma':
+        let para = [];
+        let level;
+        for (m in params[k]) {
+          para.push(params[k][m]);
+        }
+
+        level = (para[1] == 'alto')? 0x01 : 0x00;
+
+        OPCODE2.push(WAITFORop << 4 | ((para[0] & 0x07) << 1 | level));
+        OPCODE1.push(0x00);
+        break;
       default:
         OPCODE2.push(0x00);
         OPCODE1.push(0x00);
@@ -380,6 +393,20 @@ function uncode(CMDS, MOTION) {
         } else if (mode == 0) {
           programa.cmmds.push({ 'desacionar': 0 });
           programa.cmmds[len].desacionar = out;
+        }
+        break;
+
+      case WAITFORop:
+        let level = Number(op_2 & 0x01);
+        let input = Number((op_2 >> 1) & 0x7);
+        len = programa.cmmds.length;
+
+        if(level == 1){
+          programa.cmmds.push({ 'confirma': {'in': 0, 'nivel':'alto'}});
+          programa.cmmds[len].confirma.in = input;
+        }else{
+          programa.cmmds.push({ 'confirma': {'in': 0, 'nivel':'baixo'}});
+          programa.cmmds[len].confirma.in = input;
         }
         break;
 

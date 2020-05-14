@@ -298,11 +298,13 @@ describe('Drive', () => {
                   {"mover":{x: 300, y: 2, z: 1}},
                   {"esperar": 200},
                   {"acionar": 2},
+                  {"confirma": {"in": 1, "nivel": "alto"}},
                   {"desacionar": 2}]
     };
 
     beforeEach(() => {
       queueComand.clear();
+      queueResponse.clear();
 
       CS = (0x00 -(0x3E + 0xA1 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA1 , 0xC0, 0x00, 0x0A, CS];
@@ -311,7 +313,7 @@ describe('Drive', () => {
       CS = (0x00 -(0x3E + 0xA4 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA4 , 0xC0, 0x00, 0x0A, CS];
       var i;
-      for (i = 0; i < 16; i++) {
+      for (i = 0; i < 17; i++) {
         queueResponse.enqueue(arr);
       }
 
@@ -325,9 +327,9 @@ describe('Drive', () => {
       expect(queueComand.isEmpty()).to.be.equal(false);
     });
 
-    it('shold put 18 comnds on list `queueComand`', async () => {
+    it('shold put 19 comnds on list `queueComand`', async () => {
       let res = await write(programa);
-      expect(queueComand.size()).to.be.equal(18);
+      expect(queueComand.size()).to.be.equal(19);
     });
 
     it('shold put comnd LOAD/WRITE/UPDATE on list `queueComand`', async () => {
@@ -337,7 +339,7 @@ describe('Drive', () => {
       queueComand.dequeue();
 
       var i = 0;
-      for (i = 0; i < 16; i++) {
+      for (i = 0; i < 17; i++) {
         CMD = queueComand.peek();
         expect(CMD[1]).to.be.equal(0xA4);
         queueComand.dequeue();
@@ -355,6 +357,7 @@ describe('Drive', () => {
 
     beforeEach(() => {
       queueComand.clear();
+      queueResponse.clear();
 
       CS = (0x00 -(0x3E + 0xA1 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA1 , 0xC0, 0x00, 0x0A, CS];
@@ -505,6 +508,10 @@ describe('Drive', () => {
       arr = [0x3E, 0xA6 , 0xC0, 53, 0x00, CS];
       queueResponse.enqueue(arr);
 
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 115 + 0x00))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 115, 0x00, CS];
+      queueResponse.enqueue(arr);
+
       CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 52 + 0x00))&0xFF;
       arr = [0x3E, 0xA6 , 0xC0, 52, 0x00, CS];
       queueResponse.enqueue(arr);
@@ -522,7 +529,7 @@ describe('Drive', () => {
     it('shold return a motion format in json', async () =>{
       let prog = {
         id: 10,
-        qtd_cmmds: 12,
+        qtd_cmmds: 13,
         cmmds: [{ "mover": "INICIO" },
         { "mover_abs": { x: 300, y: 2, z: 1 } },
         { "mover_abs": { x: 'none', y: 2, z: 1 } },
@@ -534,8 +541,11 @@ describe('Drive', () => {
         { "mover": { x: 300, y: 'none', z: 1 } },
         { "esperar": 200 },
         { "acionar": 2 },
+        { "confirma": {'in': 1, 'nivel': 'alto'}},
         { "desacionar": 2 }]
       };
+
+       // { "confirma": {"in": 1, "nivel": "alto"}},
 
       let res = await read(10);
 
