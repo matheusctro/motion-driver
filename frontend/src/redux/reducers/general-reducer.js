@@ -1,5 +1,3 @@
-import { Store } from '../store';
-
 const initialState = {
     openSidebar: false,
     page: 'Monitoramento'

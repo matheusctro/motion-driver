@@ -5,6 +5,10 @@ const motionSchema = new Schema({
     type: Number,
     required: true,
   },
+  name:{
+    type: String,
+    required: true,
+  },
   qtd_cmmds: {
     type: Number,
     required: true,

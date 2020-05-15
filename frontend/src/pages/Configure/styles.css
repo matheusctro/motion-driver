@@ -28,11 +28,44 @@
     font-size: 18px;
     line-height: 20px;
     transition: filter 0.2s;
+    cursor: pointer;
 }
 
 .btn-calibration:hover {
     filter: brightness(90%);
 }
+
+/* .btn-calibration:after,
+.btn-calibration:before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.btn-calibration:before{
+    border-left: 1px solid rgb(23, 34, 75);
+    border-right: 1px solid rgb(18, 30, 77);
+    border-radius: 8px;
+    transform: scaleY(0);
+}
+
+.btn-calibration:after{
+    border-top: 1px solid rgb(18, 30, 77);
+    border-bottom: 1px solid rgb(18, 30, 77);
+    border-radius: 8px;
+    transform: scaleX(0);
+}
+.btn-calibration:hover:before{
+    transform: scaleY(1);
+}
+
+.btn-calibration:hover:after{
+    transform: scaleX(1);
+} */
 
 .btns-container {
     margin: 0px 10px;

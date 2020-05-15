@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Motion from '../models/motion';
 
 import { write, read, clearMotion} from '../cnc/driver';
-import {setAllow} from '../comunications/serial/allow'
+import {setAllow, readAllow} from '../comunications/serial/allow'
 import queueComand from '../Queue/queueComand';
 import queueResponse from '../Queue/queueResponse';
 
@@ -16,6 +16,7 @@ module.exports = {
     for (i = 0; i < motionFind.length; i += 1) {
       motions.push({
         'id': motionFind[i].id,
+        'name': motionFind[i].name,
         'qtd_cmmds': motionFind[i].qtd_cmmds,
         'cmmds': motionFind[i].cmmds,
       });
@@ -33,6 +34,7 @@ module.exports = {
 
     if(motionExists){
       motionExists.id = motion.id;
+      motionExists.name = motion.name;
       motionExists.qtd_cmmds = motion.qtd_cmmds;
       motionExists.cmmds = motion.cmmds;
       await motionExists.save();
@@ -40,13 +42,19 @@ module.exports = {
     }else{
       const newMotion = await Motion.create({
         id: motion.id,
+        name: motion.name,
         qtd_cmmds: motion.qtd_cmmds,
         cmmds: motion.cmmds,
       });
       response = res.json({"status": "ok"});
     }
+
+    if(!readAllow()){
+      queueComand.clear();
+      queueResponse.clear();
+    }
+
     setAllow(false);
-    queueComand.clear();
     queueResponse.clear();
     await write(motion);
     let prog = await read(motion.id);
@@ -74,6 +82,7 @@ module.exports = {
 
     if(motionExists){
       motionExists.id = motion.id;
+      motionExists.name = motion.name;
       motionExists.qtd_cmmds = 0;
       motionExists.cmmds = [];
       await motionExists.save();

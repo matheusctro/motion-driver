@@ -51,14 +51,14 @@ setInterval(async () => {
     // encoder = await ack();
     console.log(encoder);
   }
-}, 2500);
+}, 1500);
 
 setInterval(async () => {
   if(readAllow()){
     queueComand.clear();
     queueResponse.clear();
   }
-}, 5000);
+}, 10000);
 
 // // clearMotion(9);
 // // console.log(read(9));
