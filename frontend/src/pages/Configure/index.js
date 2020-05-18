@@ -22,16 +22,16 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 const marks = [
     {
-        value: 0,
-        label: 'Curto',
+        value: 2,
+        label: '2mm',
     },
     {
-        value: 50,
-        label: 'Médio',
+        value: 12,
+        label: '12mm',
     },
     {
-        value: 100,
-        label: 'Longo',
+        value: 22,
+        label: '22mm',
     }
 ];
 
@@ -65,13 +65,46 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Configure () {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const motions = useSelector(state => state.configure.motions);
-    const dispatch = useDispatch();
-    // dispatch({type: 'LOAD_MOTIONS'})
+    const motion_select = useSelector(state => state.configure.motion_select);
+    const commands = useSelector(state => state.configure.commands);
+    const dist = useSelector(state => state.configure.dist);
 
-    async function goHome(){
-        let response = await api.post(`/home`);
+    const goHome = async () => {
+        await api.post(`/home`);
+    }
+
+    const move = async(eixo, sentido) => {
+        let json = {'mover': {'x':'none', 'y': 'none','z':'none'}};
+
+        switch(eixo){
+            case 'x':
+                json.mover.x = (sentido === true) ? dist : -dist;
+                break;
+            case 'y':
+                json.mover.y = (sentido === true) ? dist : -dist;
+                break;
+            case 'z':
+                json.mover.z = (sentido === true) ? dist : -dist;
+                break;
+        }
+
+        await api.post(`/execute`, json);
+    }
+
+    const handleFreeAxis = async (event) => {
+        let value = event.target.checked ? true : false;
+        await api.post(`/free-axis?value=${value}`);
+    }
+
+    const setDist = (value) => {
+        dispatch({type: 'SET_DIST', dist: value})
+    }
+      
+    const handleMotion = (e) => {
+        dispatch({type: 'SELECT_MOTION', motion_select: e.target.value})
     }
 
     return (
@@ -85,14 +118,17 @@ export default function Configure () {
                                 variant='outlined'
                                 id="select-program"
                                 select
-                                label="Motion"
+                                label = "Motion"
+                                value = {motion_select}
+                                onChange = {handleMotion}
                             >
                                 {motions.map(motion => (
-                                    <MenuItem key={motion.id} >
-                                        {`${motion.name}`}
+                                    <MenuItem key={motion.id} value = {motion.name}>
+                                        {motion.name}
                                     </MenuItem>
                                 ))}
                             </TextField>
+
                             <div className="btns-container">
                                 <IconButton><AddIcon color="secundary" /></IconButton>
                                 <IconButton><ClearAllIcon color="secundary" /></IconButton>
@@ -109,54 +145,63 @@ export default function Configure () {
                                         #PONTO1
                                         <IconButton><NavigateNextIcon /></IconButton>
                                     </div>
-                                    <FormControlLabel className={classes.switch} control={<Switch color="primary" />} label="Eixo Livre" labelPlacement="top" />
-                                    <FormControlLabel className={classes.slider} control={<Slider
-                                        color="primary"
-                                        defaultValue={50}
-                                        aria-labelledby="discrete-slider-custom"
-                                        step={50}
-                                        marks={marks}
-                                    />
+                                    <FormControlLabel className={classes.switch} control={
+                                        <Switch 
+                                            color="primary" 
+                                            onChange = {handleFreeAxis} 
+                                        />
+                                    } label="Eixo Livre" labelPlacement="top" />
+                                    <FormControlLabel className={classes.slider} control={
+                                        <Slider
+                                            color="primary"
+                                            defaultValue={12}
+                                            aria-labelledby="discrete-slider-custom"
+                                            step={10}
+                                            marks={marks}
+                                            min={2}
+                                            max={22}
+                                            getAriaValueText={setDist}
+                                        />
                                     } label="Deslocamento" labelPlacement="top" />
                                 </div>
+
                                 <div style={{ display: 'flex' }}>
                                     <div className="real-time-graphic">
                                         <Graph />
                                     </div>
+                                    
                                     <div className="points">
                                         <button className="btn-calibration" style={{ width: '90%' }} onClick={goHome}>Home</button>
                                         <div className="joystick">
-                                            <div id="z-direction">
-                                                <Button className={classes.joystickbtns}>+Z<ArrowUpwardIcon /></Button>
-                                                <Button className={classes.joystickbtns}>-Z<ArrowDownwardIcon /></Button>
-                                            </div>
+                                            <div id="z-direction"> 
+                                                <Button className={classes.joystickbtns} onClick = {() => move('z',true)}>+Z<ArrowUpwardIcon /></Button>
+                                                <Button className={classes.joystickbtns} onClick = {() => move('z',false)}>-Z<ArrowDownwardIcon /></Button>
+                                             </div>
                                             <div id="xy-direction">
                                                 <div className="horizontalbtns" id="left">
-                                                    <Button className={classes.joystickbtns}>-X<ArrowBackIcon /></Button>
+                                                    <Button className={classes.joystickbtns} onClick = {() => move("x",false)} >-X<ArrowBackIcon /></Button>
                                                 </div>
 
                                                 <div className="verticalbtns">
-                                                    <Button className={classes.joystickbtns}>+Y<ArrowUpwardIcon /></Button>
-                                                    <Button className={classes.joystickbtns}>-Y<ArrowDownwardIcon /></Button>
+                                                    <Button className={classes.joystickbtns} onClick = {() => move("y",true)} >+Y<ArrowUpwardIcon /></Button>
+                                                    <Button className={classes.joystickbtns} onClick = {() => move("y",false)} >-Y<ArrowDownwardIcon /></Button>
                                                 </div>
 
                                                 <div className="horizontalbtns">
-                                                    <Button className={classes.joystickbtns}>+X<ArrowForwardIcon /></Button>
+                                                    <Button className={classes.joystickbtns} onClick = {() => move("x",true)} >+X<ArrowForwardIcon /></Button>
                                                 </div>
                                             </div>
                                         </div>
                                         <button className="btn-calibration" style={{ width: '90%' }}>Guardar Ponto</button>
                                     </div>
                                 </div>
-
-
                             </div>
 
                             <div className="commands-interaction-container">
                                 <ProgramTable />
                                 <button className="btn-calibration" style={{ width: '90%' }}>Novo Comando</button>
                                 <div className="btn-actions">
-                                    <button className="btn-calibration" style={{ width: '45%', backgroundColor: 'rgb(20, 255, 98)' }}>Salvar</button>
+                                    <button className="btn-calibration" style={{ width: '45%', backgroundColor: 'rgb(4, 156, 54)' }}>Salvar</button>
                                     <button className="btn-calibration" style={{ width: '45%', backgroundColor: 'red' }}>Cancelar</button>
                                 </div>
                             </div>

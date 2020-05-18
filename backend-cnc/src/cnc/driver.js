@@ -232,24 +232,29 @@ function decode(CMDS) {
               OPCODE2.push(DIRop << 4 | 0x01);
               OPCODE1.push(0x00);
             }else{
+              step[0] = -step[0];
               OPCODE2.push(DIRop << 4 | 0x00);
               OPCODE1.push(0x00);
             }
+
           }
           if (step[1] != 'none') {
             if(step[1] > 0){
               OPCODE2.push(DIRop << 4 | 0x05);
               OPCODE1.push(0x00);
             }else{
+              step[1] = -step[1];
               OPCODE2.push(DIRop << 4 | 0x04);
               OPCODE1.push(0x00);
             }
+            console.log(step[1]);
           }
           if (step[2] != 'none') {
             if(step[2] > 0){
               OPCODE2.push(DIRop << 4 | 0x09);
               OPCODE1.push(0x00);
             }else{
+              step[2] = -step[2];
               OPCODE2.push(DIRop << 4 | 0x08);
               OPCODE1.push(0x00);
             }

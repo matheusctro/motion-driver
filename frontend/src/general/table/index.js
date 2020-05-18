@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector, useDispatch} from 'react-redux';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,26 +24,92 @@ function createData(sequence, cmmd) {
     return { sequence, cmmd };
 }
 
-const rows = [
-    createData(1, 'MOVER(10,20,0)'),
-    createData(2, 'DELAY(500)'),
-    createData(3, 'ACIONAR(0)'),
-    createData(4, 'DELAY(100)'),
-    createData(5, 'ACIONAR(1)'),
-];
-
 const useStyles = makeStyles((theme) => ({
     cels: {
         // outline: '1px solid black',
         fontSize: '14px',
-        // padding: 0,
+        padding: 10,
         // margin: 0,
         align: 'center'
     },
 }));
 
-const ProgramTable = (props) => {
+const decode = (cmmd) => {
+    let cmd;
+    let param;
+    let comando;
+
+    let i;
+    for (i in cmmd) {
+        cmd = i;
+        param = cmmd[i];
+    }
+
+    switch (cmd) {
+        case 'mover':
+            if (param == "INICIO") {
+                comando = 'MOVER(INICIO)';
+            } else if (param == "FIM") {
+                comando = 'MOVER(FIM)';
+            }else{
+                let step = [];
+                for (i in param) {
+                    step.push(param[i]);
+                }
+                comando = 'MOVER(' + step[0] + ',' + step[1] + ',' + step[2] + ')';
+            }
+            break;
+        case 'mover_abs':
+            if (param == "INICIO") {
+                comando = 'MOVER_ABS(INICIO)';
+            } else if (param == "FIM") {
+                comando = 'MOVER_ABS(FIM)';
+            }else{
+                let step = [];
+                for (i in param) {
+                    step.push(param[i]);
+                }
+                comando = 'MOVER_ABS(' + step[0] + ',' + step[1] + ',' + step[2] + ')';
+            }
+            break;
+        case 'acionar':
+            comando = 'ACIONAR(' + param + ')';
+            break;
+        case 'desacionar':
+            comando = 'DESACIONAR(' + param + ')';
+            break;
+        case 'confirma':
+            comando = 'CONFIRMA(' + param.in +','+ param.nivel.toUpperCase() + ')';
+            break;
+        case 'espera':
+            comando = 'ESPERAR(' + param + ')';
+            break;
+    }
+
+    return comando;
+}
+
+export default function ProgramTable () { 
     const classes = useStyles();
+    const dispatch = useDispatch();
+
+    const motions = useSelector(state => state.configure.motions);
+    const motion_select = useSelector(state => state.configure.motion_select);
+    const commands = useSelector(state => state.configure.commands);
+
+    if(motion_select != ''){
+        motions.map(motion => {
+            if(motion.name == motion_select){
+                dispatch({type: 'COMMANDS', commands: motion.cmmds});
+            }
+        });
+    }
+
+    let rows = [];
+
+    commands.map(cmmd => {
+        rows.push(createData(rows.length + 1, decode(cmmd)));
+    });
 
     return (
         <Table className="tabela"  aria-label="caption table">
@@ -87,5 +154,3 @@ const ProgramTable = (props) => {
         </Table>
     )
 }
-
-export default ProgramTable;

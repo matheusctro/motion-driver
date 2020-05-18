@@ -1,5 +1,7 @@
 import { calibration, goHome, stop, run, setSize, readPosition, ack, axesFree , execute } from '../cnc/driver';
-import {setAllow} from '../comunications/serial/allow'
+import {setAllow, readAllow} from '../comunications/serial/allow'
+import queueComand from '../Queue/queueComand';
+import queueResponse from '../Queue/queueResponse';
 
 module.exports = {
   async run(req, res) {
@@ -83,13 +85,14 @@ module.exports = {
 
   async execute(req,res){
     setAllow(false);
+    queueResponse.clear();
     const param = req.body;
     let response = await execute(param);
-
     setAllow(true);
+
     if (response)
       return res.json({ "status": "ok" });
     else
-      return res.status(400).json({ "error": "Can't execute step" });
+      return res.status(400).json({ "error": "Can't execute" });
   }
 }
