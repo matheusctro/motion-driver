@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import './styles.css';
+
+import io from '../../socketio';
 
 const useStyles = makeStyles(theme => ({
     graphposition: {
@@ -27,39 +30,28 @@ const BorderLinearProgress = withStyles({
     }
 })(LinearProgress);
 
-const Graph = (props) => {
+const Graph = () => {
     const classes = useStyles();
-    const [completed, setCompleted] = useState(0);
-
-    useEffect(() => {
-        function progress() {
-            setCompleted((oldCompleted) => {
-                if(oldCompleted === 100) {
-                    return 0;
-                }
-                const diff = Math.random()*10;
-                return Math.min(oldCompleted + diff, 100);
-            });
-        }
-        const timer = setInterval(progress, 100);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    const encoder = useSelector(state => state.configure.encoder);
 
     return (
-        <div className="graph">
-            <Paper className={classes.graphposition}>
-                <div className="x">
-                    <BorderLinearProgress variant="determinate" value={completed} axis="x"/>
-                </div>
-                <div className="y">
-                    <BorderLinearProgress variant="determinate" value={completed*0.5} axis="y"/>
-                </div>
-                <div className="z">
-                    <BorderLinearProgress variant="determinate" value={completed*0.9} axis="z"/>
-                </div>
-            </Paper>
+        <div>
+            <div>
+                X: {encoder[0]}mm,  Y: {encoder[1]}mm, Z: {encoder[2]}mm
+            </div>
+            <div className="graph">
+                <Paper className={classes.graphposition}>
+                    <div className="x">
+                        <BorderLinearProgress variant="determinate" value={100*encoder[0]/120} axis="x" />
+                    </div>
+                    <div className="y">
+                        <BorderLinearProgress variant="determinate" value={100*encoder[1]/120} axis="y" />
+                    </div>
+                    <div className="z">
+                        <BorderLinearProgress variant="determinate" value={100*encoder[2]/120} axis="z" />
+                    </div>
+                </Paper>
+            </div>
         </div>
     )
 }

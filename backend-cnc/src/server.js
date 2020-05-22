@@ -1,15 +1,37 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
-import cors from 'cors';
+const app = express();
+
 import morgan from 'morgan';
+import cors from 'cors';
+
+const server = require('http').Server(app);
+global.io = require('socket.io')(server);
+// const io = require('./socket.io').init(server);
+
+app.use(morgan('dev'));
+app.use(cors());
+
 import routes from './routes';
 import serial from './comunications/serial/serial';
-import {readPosition,ack} from './cnc/driver';
+import {readPosition} from './cnc/driver';
 import {setAllow, readAllow} from './comunications/serial/allow'
+
 import queueComand from './Queue/queueComand';
 import queueResponse from './Queue/queueResponse';
 
-dotenv.config();
+// io.on('connection', (socket) => {
+//   console.log('New client connected');
+//   socket.on('encoder', (message) => {
+//     console.log(`encoder: ${message}`);
+//   });
+//   socket.on('status', (message) => {
+//     console.log(`status: ${message}`);
+//   });
+//   socket.on('disconnect', () => console.log('Client disconnected'));
+// });
 
 // Mongo DB
 var mongoose = require('mongoose');
@@ -28,17 +50,10 @@ db.once('open', function () {
   // We are connected!
 });
 
-const app = express();
-app.use(cors());
-app.use(morgan('dev'));
 app.use(express.json());
 app.use(routes);
 
-app.get('/', (req, res) => {
-  res.json({status: 'Server is running!'});
-});
-
-app.listen(process.env.PORT, () => console.log(`Listening on PORT ${process.env.PORT}`));
+server.listen(process.env.PORT, () => console.log(`Listening on PORT ${process.env.PORT}`));
 
 serial();
 
@@ -48,10 +63,14 @@ setInterval(async () => {
     setAllow(false);
     encoder = await readPosition();
     setAllow(true);
-    // encoder = await ack();
-    console.log(encoder);
+    io.emit('/encoder', encoder);
+    // console.log(encoder);
   }
-}, 2000);
+  // let encoder = await readPosition();
+  // io.emit('/encoder', encoder);
+  // console.log(encoder);
+},1000);
+
 
 // setInterval(async () => {
 //   if(readAllow()){

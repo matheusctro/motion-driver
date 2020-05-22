@@ -247,7 +247,6 @@ function decode(CMDS) {
               OPCODE2.push(DIRop << 4 | 0x04);
               OPCODE1.push(0x00);
             }
-            console.log(step[1]);
           }
           if (step[2] != 'none') {
             if(step[2] > 0){
@@ -852,7 +851,8 @@ function waitResponse(time) {
         queueResponse.dequeue();
         resolve(response);
       }
-    }, time);
+    }, 100);
+  // }, time);
   });
 }
 

@@ -5,6 +5,7 @@ import { write, read, clearMotion} from '../cnc/driver';
 import {setAllow, readAllow} from '../comunications/serial/allow'
 import queueComand from '../Queue/queueComand';
 import queueResponse from '../Queue/queueResponse';
+// const { io } = require('../socket.io').getio();
 
 module.exports = {
   async index(req, res) {
@@ -60,9 +61,8 @@ module.exports = {
     let prog = await read(motion.id);
 
     if(motion.id == prog.id && motion.qtd_cmmds == prog.qtd_cmmds && motion.cmmds.length == prog.cmmds.length){
-      console.log(prog);
-      console.log(prog);
       console.log("Escrita com sucesso!");
+      io.emit('/status', "Escrita com sucesso");
     }else{
       console.log("Escrita sem sucesso!");
       // await write(motion);
@@ -82,7 +82,6 @@ module.exports = {
 
     if(motionExists){
       motionExists.id = motion.id;
-      motionExists.name = motion.name;
       motionExists.qtd_cmmds = 0;
       motionExists.cmmds = [];
       await motionExists.save();
@@ -90,6 +89,11 @@ module.exports = {
     }else{
       console.log('Motion não existe');
       response = res.status(400).json({ "error": "Motion not exists" });
+    }
+
+    if(!readAllow()){
+      queueComand.clear();
+      queueResponse.clear();
     }
 
     setAllow(false);

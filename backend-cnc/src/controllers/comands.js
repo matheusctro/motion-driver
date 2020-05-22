@@ -3,6 +3,15 @@ import {setAllow, readAllow} from '../comunications/serial/allow'
 import queueComand from '../Queue/queueComand';
 import queueResponse from '../Queue/queueResponse';
 
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
+
 module.exports = {
   async run(req, res) {
     setAllow(false);
@@ -84,6 +93,13 @@ module.exports = {
   },
 
   async execute(req,res){
+
+    if(!readAllow()){
+      sleep(1000);
+      queueComand.clear();
+      queueResponse.clear();
+    }
+
     setAllow(false);
     queueResponse.clear();
     const param = req.body;

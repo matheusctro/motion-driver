@@ -1,0 +1,93 @@
+.modal{
+    width: 350px;
+    height: 200px;
+    background: white;
+    border: 1px solid rgb(204, 204, 204);
+    box-shadow:  0 0 1em rgba(77, 73, 73, 0.87);
+    border-radius: 2px;
+    margin: 0px 0px;
+    display: grid;
+}
+
+.modal-header {
+    font: 200 18px Roboto, sans-serif;
+    color: #222;
+    line-height: 20px;
+    padding: 15px 27px;
+    height: 50px;
+    display: flex;
+    border-bottom-style:solid;
+    border-block-end-width: 1px ;
+    border-bottom-color:rgb(204, 204, 204);
+}
+
+.modal-body-calib{
+    text-align: center;
+    align-content: center;
+    padding: 10px;
+    height: 98px;
+}
+
+.modal-footer{
+    padding: 5px;
+    text-align:  right ;
+    align-content: right;
+    height: 50px;
+    background: rgb(238, 238, 238);
+}
+
+.calibration {
+    margin: 5px;
+    padding: 3px;
+}
+
+.input-calib{
+    font: 300 16px Roboto, sans-serif;
+    color: #222;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 5px;
+    width: 60px;
+    margin: 0px 4px;
+    padding: 7px;
+    height: 50px;
+}
+
+.btn-salvar {
+    padding: 5px 12px;
+    font: 400 13px Roboto, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px;
+    margin-top: 5px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: filter 0.2s;
+    background: #3660FE;
+    /* background-image: linear-gradient(to bottom, #00a7e6 0%, #0096cc 100%); */
+    color: white;
+    width: 90px;
+    height: 30px;
+    margin: 5px;
+}
+
+.btn-cancelar {
+    padding: 5px 12px;
+    font: 400 13px Roboto, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px;
+    margin-top: 5px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: filter 0.2s;
+    background: #fbfbfb;
+    color: #222;
+    width: 90px;
+    height: 30px;
+    margin: 5px;
+}
+

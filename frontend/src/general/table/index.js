@@ -1,5 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch} from 'react-redux';
+import api from '../../services/api';
+
+
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -81,7 +84,7 @@ const decode = (cmmd) => {
         case 'confirma':
             comando = 'CONFIRMA(' + param.in +','+ param.nivel.toUpperCase() + ')';
             break;
-        case 'espera':
+        case 'esperar':
             comando = 'ESPERAR(' + param + ')';
             break;
     }
@@ -96,20 +99,31 @@ export default function ProgramTable () {
     const motions = useSelector(state => state.configure.motions);
     const motion_select = useSelector(state => state.configure.motion_select);
     const commands = useSelector(state => state.configure.commands);
-
-    if(motion_select != ''){
-        motions.map(motion => {
-            if(motion.name == motion_select){
-                dispatch({type: 'COMMANDS', commands: motion.cmmds});
-            }
-        });
-    }
+    const indexNewCommand = useSelector(state => state.configure.indexNewCommand);
 
     let rows = [];
 
     commands.map(cmmd => {
         rows.push(createData(rows.length + 1, decode(cmmd)));
     });
+
+    const handleExecuteCommand = async(linha) => {
+        let execute = commands[linha.sequence -1];
+        await api.post(`/execute`, execute);
+    }
+
+    const handleDeleteCommand = (linha) => {
+        let com = commands;
+       com.splice(linha.sequence - 1, 1);
+
+        dispatch({type: 'COMMANDS', commands: []});
+        dispatch({ type: 'COMMANDS', commands: com });
+    }
+
+    const handleEditCommand = (linha) =>{
+        dispatch({ type: 'SET_INDEX_NEW_COMMAND', indexNewCommand: (linha.sequence - 1)});
+        dispatch({ type: 'SET_OPEN_MODAL_COMMAND', openModalNewCommand: true });
+    }
 
     return (
         <Table className="tabela"  aria-label="caption table">
@@ -133,7 +147,7 @@ export default function ProgramTable () {
                 { rows.map( (row) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
                         <TableCell className={classes.cels} align='center' style={{width: '80px'}}>
-                            <IconButton><PlayArrowIcon color="secundary" /></IconButton>
+                            <IconButton onClick = { () => {handleExecuteCommand(row)}} ><PlayArrowIcon color="secundary" /></IconButton>
                         </TableCell>
                         {columns.map( (column) => {
                             const value = row[column.id];
@@ -144,8 +158,8 @@ export default function ProgramTable () {
                             );
                         })}
                         <TableCell className={classes.cels} align='center' style={{minWidth: '128px'}}>
-                            <IconButton><EditIcon color="secundary" /></IconButton>
-                            <IconButton><DeleteIcon color="secundary" /></IconButton>
+                            <IconButton onClick = { () => {handleEditCommand(row)} }><EditIcon color="secundary" /></IconButton>
+                            <IconButton onClick = { () => {handleDeleteCommand(row)} }><DeleteIcon color="secundary" /></IconButton>
                         </TableCell>
                     </TableRow>
                 ))}
