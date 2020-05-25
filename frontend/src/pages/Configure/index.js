@@ -11,6 +11,7 @@ import CalibrationModal from '../../general/modal/calibration';
 import ConfirmationClearModal from '../../general/modal/confirmationClear';
 import ConfirmationDeleteModal from '../../general/modal/confirmationDelete';
 import AlertModal from '../../general/modal/alert';
+import StatusModal from '../../general/modal/status';
 
 import api from '../../services/api';
 import { loadMotions } from '../../actions/index'
@@ -320,6 +321,7 @@ export default function Configure() {
             <ConfirmationClearModal/>
             <ConfirmationDeleteModal/>
             <AlertModal/>
+            <StatusModal/>
         </div>
     );
 }

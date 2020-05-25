@@ -12,6 +12,8 @@ const initialState = {
     openModalConfirmationDelete: false,
     openModalConfirmationClear:false,
     openModalAlert:false,
+    openModalStatus:false,
+    status: '',
     command_select: "MOVER",
     command: "MOVER()",
     params: "",
@@ -100,6 +102,16 @@ export const ConfigureReducer = (state = initialState, action) => {
             return {
                 ...state,
                 openModalAlert: action.openModalAlert
+            };
+        case 'SET_OPEN_MODAL_STATUS':
+            return {
+                ...state,
+                openModalStatus: action.openModalStatus
+            };
+        case 'SET_STATUS':
+            return {
+                ...state,
+                status: action.status
             };
         case 'SET_POSITION':
             return {

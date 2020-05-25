@@ -14,7 +14,6 @@ function sleep(milliseconds) {
   } while (currentDate - date < milliseconds);
 }
 
-
 module.exports = {
   async index(req, res) {
     let motions = [];
@@ -70,9 +69,9 @@ module.exports = {
 
     if(motion.id == prog.id && motion.qtd_cmmds == prog.qtd_cmmds && motion.cmmds.length == prog.cmmds.length){
       console.log("Escrita com sucesso!");
-      io.emit('/status', "Escrita com sucesso");
+      io.emit('/status', "Programa atualizado com sucesso!");
     }else{
-      io.emit('/status', "Escrita sem sucesso");
+      io.emit('/status', "Programa não pode ser atualizado!");
       console.log("Escrita sem sucesso!");
       // await write(motion);
       // prog = await read(motion.id);
@@ -114,16 +113,18 @@ module.exports = {
 
       if(motion.id == prog.id && prog.qtd_cmmds == 0 && prog.cmmds.length == 0){
         console.log("Verificado com sucesso!");
+        io.emit('/status', "Programa atualizado com sucesso!");
       }else{
         console.log("Falha na limpeza do Motion!");
+        io.emit('/status', "Programa não pode ser atualizado!");
       }
     }else{
+      io.emit('/status', "Programa não pode ser atualizado!");
       console.log("Falha na limpeza do Motion!")
     }
     setAllow(true);
     return response;
   },
-
   async delete(req, res) {
     const deleteMotion = req.query;
     const motionDeletado = await Motion.findOne({ id: deleteMotion.id });

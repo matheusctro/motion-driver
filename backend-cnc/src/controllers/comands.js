@@ -70,12 +70,13 @@ module.exports = {
     const Param = req.query;
     setAllow(false);
     let response = await setSize(Param.sizeX, Param.sizeY, Param.sizeZ);
-
     response = await calibration();
     setAllow(true);
-    if(response)
+
+    if(response){
+      io.emit('/status', "Calibrado com sucesso!");
       return res.json({"status": "ok"});
-    else
+    }else
       return res.status(400).json({ "error": "Can't stop" });
   },
 

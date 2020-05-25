@@ -9,12 +9,14 @@ io.on('connection', () => {
     console.log('CONNECTED')
 } )
 
-io.on('/encoder', DataCue => {
-    Store.dispatch({ type: 'SET_ENCODER', encoder: DataCue })
+io.on('/encoder', Data => {
+    Store.dispatch({ type: 'SET_ENCODER', encoder: Data })
 })
 
-io.on('/status', DataCue => {
-    console.log(DataCue);
+io.on('/status', Data =>{
+    Store.dispatch({ type: 'SET_OPEN_MODAL_STATUS', openModalStatus: true });
+    Store.dispatch({ type: 'SET_STATUS', status: Data });
+    // console.log(Data);
 })
 
 export default io
