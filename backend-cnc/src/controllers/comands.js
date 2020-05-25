@@ -80,12 +80,8 @@ module.exports = {
   },
 
   async freeAxis(req, res) {
-    setAllow(false);
     const param = req.query;
-   // console.log(param);
     let response = await axesFree(param.value);
-    // console.log(response);
-    setAllow(true);
     if (response)
       return res.json({ "status": "ok" });
     else
@@ -93,22 +89,12 @@ module.exports = {
   },
 
   async execute(req,res){
-
-    if(!readAllow()){
-      sleep(1000);
-      queueComand.clear();
-      queueResponse.clear();
-    }
-
-    setAllow(false);
-    queueResponse.clear();
     const param = req.body;
     let response = await execute(param);
-    setAllow(true);
 
     if (response)
       return res.json({ "status": "ok" });
     else
-      return res.status(400).json({ "error": "Can't execute" });
+    return res.status(400).json({ "error": "Can't move!" });
   }
 }

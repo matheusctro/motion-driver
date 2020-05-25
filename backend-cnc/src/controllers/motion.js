@@ -5,7 +5,15 @@ import { write, read, clearMotion} from '../cnc/driver';
 import {setAllow, readAllow} from '../comunications/serial/allow'
 import queueComand from '../Queue/queueComand';
 import queueResponse from '../Queue/queueResponse';
-// const { io } = require('../socket.io').getio();
+
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
 
 module.exports = {
   async index(req, res) {
@@ -51,12 +59,12 @@ module.exports = {
     }
 
     if(!readAllow()){
-      queueComand.clear();
-      queueResponse.clear();
+      setAllow(false);
+      sleep(1000);
     }
 
     setAllow(false);
-    queueResponse.clear();
+
     await write(motion);
     let prog = await read(motion.id);
 
@@ -64,6 +72,7 @@ module.exports = {
       console.log("Escrita com sucesso!");
       io.emit('/status', "Escrita com sucesso");
     }else{
+      io.emit('/status', "Escrita sem sucesso");
       console.log("Escrita sem sucesso!");
       // await write(motion);
       // prog = await read(motion.id);

@@ -31,6 +31,7 @@ const PARAM_Z = 38;
 
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
+import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
 
 async function calibration() {
   return await execute_cmd(0x6C, 0x00);
@@ -776,7 +777,7 @@ async function read_pos_cmd(MOTOR) {
   const CMD = [0x3E, READ_POScmd, MOTOR, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(70);
+  const res = await waitResponseEncoder(70);
 
   if ((res[1] == READ_POScmd) && (res[2] == 0xC0)) {
     let pos = Number((res[3] << 8) | res[4]);
@@ -855,6 +856,21 @@ function waitResponse(time) {
   // }, time);
   });
 }
+
+function waitResponseEncoder(time) {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (!queueResponseEncoder.isEmpty()) {
+        clearInterval(interval);
+        let response = queueResponseEncoder.peek();
+        queueResponseEncoder.dequeue();
+        resolve(response);
+      }
+    }, 100);
+  // }, time);
+  });
+}
+
 
 module.exports = {
   calibration,

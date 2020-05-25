@@ -4,6 +4,7 @@ import ByteLength from '@serialport/parser-byte-length';
 
 import queueComand from '../../Queue/queueComand';
 import queueResponse from '../../Queue/queueResponse';
+import queueResponseEncoder from '../../Queue/queueResponseEncoder';
 import findSerial from './findSerial';
 
 async function serial() {
@@ -17,7 +18,6 @@ async function serial() {
   });
 
   const parser = port.pipe(new ByteLength({ length: 6 }));
-  //const parser = port.pipe(new Delimiter({ delimiter: [0x3E] }), new ByteLength({length: 6}))
 
   port.on("open", () => {
     console.log('serial port open');
@@ -27,13 +27,17 @@ async function serial() {
   parser.on('data', data => {
     let arr = [];
     if(data.length == 6){
-      if(data[0] == 0X3E){
+      if(data[0] == 0x3E){
         let i = 0;
         for(i;i < 6;i++) arr[i] = data[i];
-        queueResponse.enqueue(arr);
-        //  console.log(`Recebido: [${arr}]`);
+        if(arr[1] == 0xAA){
+          queueResponseEncoder.enqueue(arr);
+        }else{
+          queueResponse.enqueue(arr);
+        }
+        // console.log(`Recebido: [${arr}]`);
       }
-    }    
+    }
   });
 
   port.on("close", () => {
@@ -46,7 +50,7 @@ async function serial() {
   setInterval(() => {
     if (!queueComand.isEmpty()) {
       let sendData = queueComand.peek();
-      //console.log(`Enviado: [${sendData}]`);
+      // console.log(`Enviado: [${sendData}]`);
       port.write([sendData[0]]);
       port.write([sendData[1]]);
       port.write([sendData[2]]);
