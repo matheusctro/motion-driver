@@ -844,13 +844,18 @@ async function axesFree_cmd(mode) {
 }
 
 function waitResponse(time) {
+  let cont = 0;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
+      cont++;
       if (!queueResponse.isEmpty()) {
         clearInterval(interval);
         let response = queueResponse.peek();
         queueResponse.dequeue();
         resolve(response);
+      }
+      if(cont > 10 ){
+        resolve([0x00]);
       }
     }, 100);
   // }, time);
@@ -858,13 +863,18 @@ function waitResponse(time) {
 }
 
 function waitResponseEncoder(time) {
+  let cont = 0;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
+      cont++;
       if (!queueResponseEncoder.isEmpty()) {
         clearInterval(interval);
         let response = queueResponseEncoder.peek();
         queueResponseEncoder.dequeue();
         resolve(response);
+      }
+      if(cont > 10 ){
+        resolve([0x00]);
       }
     }, 100);
   // }, time);
