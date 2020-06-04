@@ -4,7 +4,7 @@ async function findSerial() {
   let p = null;
   var ports = await SerialPort.list().then(ports => {
     if (ports.length == 0) {
-      console.log('Nenhuma serial encontrada!!!');
+      // console.log('Nenhuma serial encontrada!!!');
     }
     // ports.map(name => {
     //   console.log('Serial: ' + name.path.toString() + ',' + name.manufacturer.toString());
@@ -19,7 +19,7 @@ async function findSerial() {
   });
 
   if (p == null) {
-    console.log('Serial correta não encontrada!!!');
+    // console.log('Serial correta não encontrada!!!');
     return;
   }
   return p;

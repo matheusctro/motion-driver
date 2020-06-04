@@ -8,21 +8,41 @@ import findSerial from './findSerial';
 
 async function serial() {
   var Myport = await findSerial();
+  let port;
+  let parser;
 
   if (Myport == null) {
     io.emit('/status', "CNC desconectada!");
-    console.log("..");
+    const interval = setInterval(async () => {
+      try {
+        Myport = await findSerial();
+        if (Myport != null) {
+          /* Criação da comunicaçãos serial */
+          port = new SerialPort(Myport, function (err) {
+            if (err) {
+              return console.log('Error-Serial: ', err.message);
+            }
+          });
+
+          parser = port.pipe(new ByteLength({ length: 6 }));
+          clearInterval(interval);
+        }
+      }
+      catch (e) {
+        console.log(e);
+      }
+    }, 3000);
+
   } else {
 
-
     /* Criação da comunicaçãos serial */
-    let port = new SerialPort(Myport, function (err) {
+    port = new SerialPort(Myport, function (err) {
       if (err) {
         return console.log('Error-Serial: ', err.message);
       }
     });
 
-    let parser = port.pipe(new ByteLength({ length: 6 }));
+    parser = port.pipe(new ByteLength({ length: 6 }));
 
     port.on("open", () => {
       console.log('serial port open');
@@ -39,9 +59,9 @@ async function serial() {
           if (arr[1] == 0xAA) {
             queueResponseEncoder.enqueue(arr);
           } else {
+            //console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
           }
-          // console.log(`Recebido: [${arr}]`);
         }
       }
     });

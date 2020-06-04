@@ -51,7 +51,7 @@ setInterval(async () => {
     setAllow(true);
     io.emit('/encoder', encoder);
   }
-},250);
+},300);
 
 // taskkill /f /im node.exe
 

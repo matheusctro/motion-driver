@@ -29,11 +29,9 @@ module.exports = {
         'cmmds': motionFind[i].cmmds,
       });
     }
-    // const prog = await read(1);
-    // console.log(prog);
-
     return res.json(motions);
   },
+
   async store(req, res) {
     const motion = req.body;
 
@@ -64,6 +62,8 @@ module.exports = {
 
     setAllow(false);
 
+    console.log(motion);
+
     await write(motion);
     let prog = await read(motion.id);
 
@@ -71,6 +71,8 @@ module.exports = {
       console.log("Escrita com sucesso!");
       io.emit('/status', "Programa atualizado com sucesso!");
     }else{
+      console.log(motion);
+      console.log(prog);
       io.emit('/status', "Programa não pode ser atualizado!");
       console.log("Escrita sem sucesso!");
       // await write(motion);
@@ -82,6 +84,96 @@ module.exports = {
     setAllow(true);
     return response;
   },
+
+  async read(req, res){
+    // let motion = {
+    //   "id": 12,
+    //   "name": "Programa 12",
+    //   "qtd_cmmds": 0,
+    //   "cmmds": [
+    //   ]
+    // }
+
+    // let i;
+    // for(i=12; i < 64; i ++){
+    //   motion.id  = i;
+    //   motion.name = "Programa " + i;
+    //   console.log(motion);
+    //   await write(motion);
+    // }
+
+    let motions = [];
+
+    let i;
+    for (i = 0; i < 64; i++) {
+      const motion = await read(i);
+      if (motion.qtd_cmmds != 0) {
+        console.log(motion);
+        motions.push(motion);
+        const motionExists = await Motion.findOne({ id: motion.id });
+
+        if (motionExists) {
+          motionExists.id = motion.id;
+          motionExists.name = motion.name;
+          motionExists.qtd_cmmds = motion.qtd_cmmds;
+          motionExists.cmmds = motion.cmmds;
+          await motionExists.save();
+
+        } else {
+          const newMotion = await Motion.create({
+            id: motion.id,
+            name: motion.name,
+            qtd_cmmds: motion.qtd_cmmds,
+            cmmds: motion.cmmds,
+          });
+        }
+      }
+    }
+
+    io.emit('/status', "Upload finalizado!");
+
+    return res.json(motions);
+  },
+
+  async download(req, res) {
+    const motions = req.body.motions;
+
+    let response;
+    response = res.json({"status": "ok"});
+
+    if(!readAllow()){
+      setAllow(false);
+      sleep(1000);
+    }
+
+    setAllow(false);
+    let respo = true;
+    let i;
+
+    for(i = 0; i < motions.length; i++){
+      await write(motions[i]);
+      let prog = await read(motions[i].id);
+
+      if (motions[i].id == prog.id && motions[i].qtd_cmmds == prog.qtd_cmmds && motions[i].cmmds.length == prog.cmmds.length) {
+        console.log("Escrita com sucesso!");
+      } else {
+        respo = false;
+        console.log(motions[i]);
+        console.log(prog);
+        console.log("Escrita sem sucesso!");
+      }
+    }
+    setAllow(true);
+
+    if(respo){
+      io.emit('/status', "Download finalizado com sucesso!");
+    }else{
+      io.emit('/status', "Download finalizado sem sucesso!");
+    }
+
+    return response;
+  },
+
   async clear(req, res) {
     const motion = req.query;
 
@@ -125,6 +217,7 @@ module.exports = {
     setAllow(true);
     return response;
   },
+
   async delete(req, res) {
     const deleteMotion = req.query;
     const motionDeletado = await Motion.findOne({ id: deleteMotion.id });

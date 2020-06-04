@@ -340,10 +340,12 @@ function decode(CMDS) {
 function uncode(CMDS, MOTION) {
   let programa = {
     id: 0,
+    name: "Programa " + 0,
     qtd_cmmds: 0,
     cmmds: []
   };
   programa.id = MOTION;
+  programa.name = "Programa " + MOTION;
 
   let GOMM = [0, 0, 0];
   let flagGOMM = false;
@@ -854,7 +856,7 @@ function waitResponse(time) {
         queueResponse.dequeue();
         resolve(response);
       }
-      if(cont > 10 ){
+      if(cont > 20 ){
         resolve([0x00]);
       }
     }, 100);

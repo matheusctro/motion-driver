@@ -181,10 +181,11 @@ export default function NewCommandModal() {
             dispatch({type: 'COMMANDS', commands: [ ...commands, uncode(command)]});
         }else{
             let com = commands;
-            com[indexNewCommand] = uncode(command);
+            com[indexNewCommand - 1] = uncode(command);
             dispatch({type: 'COMMANDS', commands: []});
             dispatch({ type: 'COMMANDS', commands: com });
         }
+
     } 
 
     return (

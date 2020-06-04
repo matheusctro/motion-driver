@@ -121,7 +121,7 @@ export default function ProgramTable () {
     }
 
     const handleEditCommand = (linha) =>{
-        dispatch({ type: 'SET_INDEX_NEW_COMMAND', indexNewCommand: (linha.sequence - 1)});
+        dispatch({ type: 'SET_INDEX_NEW_COMMAND', indexNewCommand: (linha.sequence)});
         dispatch({ type: 'SET_OPEN_MODAL_COMMAND', openModalNewCommand: true });
     }
 
