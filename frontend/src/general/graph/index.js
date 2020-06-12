@@ -36,8 +36,16 @@ const Graph = () => {
 
     return (
         <div>
-            <div>
-                X: {encoder[0]}mm,  Y: {encoder[1]}mm, Z: {encoder[2]}mm
+            <div className="coordinates">
+                <div className="xCoord">
+                    Eixo X: {encoder[0]}mm     
+                </div>
+                <div className="yCoord">
+                    Eixo Y: {encoder[1]}mm
+                </div>
+                <div className="zCoord">
+                    Eixo Z: {encoder[2]}mm
+                </div>
             </div>
             <div className="graph">
                 <Paper className={classes.graphposition}>

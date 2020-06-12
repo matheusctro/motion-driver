@@ -148,6 +148,7 @@
     justify-content: center;
 }
 
+
 .joystick #xy-direction {
     /* background-color: salmon; */
     min-width: 70%;
@@ -155,6 +156,8 @@
     align-items: center;
     justify-content: center;
 }
+
+
 
 .horizontalbtns {
     /* outline: 2px solid black; */

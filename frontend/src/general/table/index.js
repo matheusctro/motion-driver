@@ -16,9 +16,18 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
+
 const columns = [
-    { id: 'sequence', label: 'Sequência', minWidth: 10, align: 'center' },
-    { id: 'cmmd', label: 'Comando', minWidth: 100, align: 'center' },
+    { id: 'sequence', 
+      label: 'Sequência', 
+      minWidth: 10, 
+      align: 'center' },
+
+    { id: 'cmmd',
+      label: 'Comando',
+      minWidth: 100, 
+      align: 'center', 
+      color:'white' },
     // { id: 'params', label: 'Parâmetros', minWidth: 100, align: 'center' },
 ];
 
@@ -30,10 +39,15 @@ function createData(sequence, cmmd) {
 const useStyles = makeStyles((theme) => ({
     cels: {
         // outline: '1px solid black',
-        fontSize: '14px',
+        fontSize: '18px',
         padding: 10,
         // margin: 0,
-        align: 'center'
+        color:'#4d4d4d',
+        align: 'center',
+        font: 'Roboto',
+        backgroundColor: 'white'
+        /*borderRadius:'8px'*/
+        /*outline: '1px solid black'*/
     },
 }));
 

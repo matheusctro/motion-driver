@@ -4,6 +4,7 @@ import Menu from '../../general/menu';
 import Topbar from '../../general/topbar';
 import Graph from '../../general/graph';
 import ProgramTable from '../../general/table';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import NewMotionModal from '../../general/modal/newMotion';
 import NewCommandModal from '../../general/modal/newCommand';
@@ -33,6 +34,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
+import BuildIcon from '@material-ui/icons/Build';
 
 const marks = [
   {
@@ -74,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     width: '60px',
     height: '60px',
     margin: '5px',
-  }
+  },
 }));
 
 
@@ -251,12 +253,24 @@ export default function Configure() {
                 </TextField>
 
                 <div className="btns-container">
-                  <IconButton onClick={handleOpenModal}><AddIcon color="secundary" /></IconButton>
-                  <IconButton onClick={handleClear}><ClearAllIcon color="secundary" /></IconButton>
-                  <IconButton onClick={handleDelete}><DeleteIcon color="secundary" /></IconButton>
-                  <button onClick={handleOpenCalibration} className="btn-calibration">Calibração</button>
-                  <IconButton onClick={handleUpload}><PublishIcon color="secundary" /></IconButton>
-                  <IconButton onClick={handleDownload}><GetAppIcon color="secundary" /></IconButton>
+                  <Tooltip title="Create Motion" enterDelay={150}>
+                    <IconButton onClick={handleOpenModal}><AddIcon color="secundary" /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Clear Motion" enterDelay={150}>
+                    <IconButton onClick={handleClear}><ClearAllIcon color="secundary" /></IconButton>
+                  </Tooltip >
+                  <Tooltip title="Delete Motion" enterDelay={150}>
+                    <IconButton onClick={handleDelete}><DeleteIcon color="secundary" /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Calibrate" enterDelay={150}>
+                    <IconButton onClick={handleOpenCalibration}><BuildIcon color="secundary" /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Upload" enterDelay={150}>
+                    <IconButton onClick={handleUpload}><PublishIcon color="secundary" /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Download" enterDelay={150}>
+                    <IconButton onClick={handleDownload}><GetAppIcon color="secundary" /></IconButton>
+                  </Tooltip>
                 </div>
               </div>
 

@@ -22,9 +22,23 @@
 .graph {
     /* outline: 1px solid black; */
     width: 100%;
-    height: 500px;
+    height: 450px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+}
+
+.coordinates{
+    width: 26%;
+    display: flex;
+    align-items: center;
+    /*justify-content: space-between;*/
+    flex-direction: column;
+    
+}
+
+.xCoord, .yCoord, .zCoord {
+    font: 400 18px Roboto, sans-serif;
 }
