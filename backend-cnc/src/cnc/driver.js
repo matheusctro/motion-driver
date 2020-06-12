@@ -32,6 +32,7 @@ const PARAM_Z = 38;
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
 import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
+import { listen } from 'socket.io';
 
 async function calibration() {
   return await execute_cmd(0x6C, 0x00);
@@ -67,7 +68,12 @@ async function stop() {
 }
 
 async function run(MOTION) {
-  return await run_cmd(MOTION);
+  let res;
+
+  res = await run_cmd(MOTION);
+  if (!res) return false;
+
+  return await waitfinish();
 }
 
 async function setSize(sizeX, sizeY, sizeZ) {
@@ -857,6 +863,7 @@ function waitResponse(time) {
         resolve(response);
       }
       if(cont > 20 ){
+        clearInterval(interval);
         resolve([0x00]);
       }
     }, 100);
@@ -876,6 +883,7 @@ function waitResponseEncoder(time) {
         resolve(response);
       }
       if(cont > 10 ){
+        clearInterval(interval);
         resolve([0x00]);
       }
     }, 100);
@@ -883,6 +891,24 @@ function waitResponseEncoder(time) {
   });
 }
 
+async function waitfinish(){
+  let cont = 0;
+  return new Promise((resolve) => {
+    const interval = setInterval(async () => {
+      let response;
+      cont++;
+      response  = await ack_cmd();
+      if(response == 0){
+        clearInterval(interval);
+        resolve(true);
+      }
+      if(cont > 100 ){
+        clearInterval(interval);
+        resolve(false);
+      }
+    }, 200);
+  });
+}
 
 module.exports = {
   calibration,
