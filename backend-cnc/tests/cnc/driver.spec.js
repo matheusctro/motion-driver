@@ -2,7 +2,8 @@ import { expect } from 'chai';
 
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
-import {calibration, goHome, step, stop, run, setSize, write, read, clearMotion, readPosition, ack, axesFree, execute} from '../../src/cnc/driver';
+import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
+import {calibration, goHome, step, stop, run, setSize, write, read, clearMotion, readPosition, ack, axesFree, execute, updateGains} from '../../src/cnc/driver';
 
 describe('Drive', () => {
 
@@ -71,6 +72,12 @@ describe('Drive', () => {
       expect(execute).to.exist;
       expect(execute).to.be.a('function');
     });
+
+    it('shold exist the method `updateGains`', () => {
+      expect(updateGains).to.exist;
+      expect(updateGains).to.be.a('function');
+    });
+
   });
 
   describe('Calibration', ()=>{
@@ -529,6 +536,7 @@ describe('Drive', () => {
     it('shold return a motion format in json', async () =>{
       let prog = {
         id: 10,
+        "name":"Programa 10",
         qtd_cmmds: 13,
         cmmds: [{ "mover": "INICIO" },
         { "mover_abs": { x: 300, y: 2, z: 1 } },
@@ -656,17 +664,17 @@ describe('Drive', () => {
     beforeEach(() => {
       queueComand.clear();
 
-      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0xC8))&0xFF;
       arr = [0x3E, 0xAA , 0xC0, 0x00, 0xC8, CS];
-      queueResponse.enqueue(arr);
+      queueResponseEncoder.enqueue(arr);
 
-      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x0B + 0xB8))&0xFF;
       arr = [0x3E, 0xAA , 0xC0, 0x0B, 0xB8, CS];
-      queueResponse.enqueue(arr);
+      queueResponseEncoder.enqueue(arr);
 
-      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 +  0x0F + 0xA0))&0xFF;
       arr = [0x3E, 0xAA , 0xC0, 0x0F, 0xA0, CS];
-      queueResponse.enqueue(arr);
+      queueResponseEncoder.enqueue(arr);
     });
 
     it('shold put comnds on list `queueComand`', async () => {
@@ -836,5 +844,159 @@ describe('Drive', () => {
       // // expect(CMD[3]).to.be.equal(0x00);
       // queueComand.dequeue();
     });
+  });
+
+  describe('UpdateGains', () => {
+
+    let CS;
+    let arr;
+
+    beforeEach(() => {
+      queueComand.clear();
+
+      CS = (0x00 -(0x3E + 0xA3 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA3 , 0xC0, 0x00, 0x0A, CS];
+      var i;
+      for (i = 0; i < 3; i++) {
+        queueResponse.enqueue(arr);
+      }
+
+      CS = (0x00 -(0x3E + 0xA5 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA5 , 0xC0, 0x00, 0x0A, CS];
+      queueResponse.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xA3 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA3 , 0xC0, 0x00, 0x0A, CS];
+      for (i = 0; i < 3; i++) {
+        queueResponse.enqueue(arr);
+      }
+
+      CS = (0x00 -(0x3E + 0xA5 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA5 , 0xC0, 0x00, 0x0A, CS];
+      queueResponse.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xA3 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA3 , 0xC0, 0x00, 0x0A, CS];
+      for (i = 0; i < 3; i++) {
+        queueResponse.enqueue(arr);
+      }
+
+      CS = (0x00 -(0x3E + 0xA5 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA5 , 0xC0, 0x00, 0x0A, CS];
+      queueResponse.enqueue(arr);
+
+      
+    });
+
+    it('shold put comands on list `queueComand`', async () => {
+      let gains = {"motor": "x", "kp": 50, "kd" : 40, "ki": 1};
+      let res = await updateGains(gains);
+
+      expect(queueComand.isEmpty()).to.be.equal(false);
+    });
+
+    it('shold put 4 comands on list `queueComand`', async () => {
+      let gains = {"motor": "y", "kp": 100, "kd" : 70, "ki": 1};
+      let res = await updateGains(gains);
+
+      expect(queueComand.size()).to.be.equal(4);
+    });
+
+    it('shold put comand `set_param` on list `queueComand`', async () => {
+      let gains = {"motor": "x", "kp": 50, "kd" : 40, "ki": 1};
+      let res = await updateGains(gains);
+
+      let CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(39);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(50);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(40);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(40);
+      queueComand.dequeue();
+
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(41);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(1);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA5);
+      expect(CMD[2]).to.be.equal(0);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(0);
+      queueComand.dequeue();
+
+      gains = {"motor": "y", "kp": 100, "kd" : 70, "ki": 1};
+      res = await updateGains(gains);
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(42);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(100);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(43);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(70);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(44);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(1);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA5);
+      expect(CMD[2]).to.be.equal(0);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(0);
+      queueComand.dequeue();
+
+      gains = {"motor": "z", "kp": 70, "kd" : 30, "ki": 1};
+      res = await updateGains(gains);
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(45);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(70);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(46);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(30);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA3);
+      expect(CMD[2]).to.be.equal(47);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(1);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA5);
+      expect(CMD[2]).to.be.equal(0);
+      expect(CMD[3]).to.be.equal(0);
+      expect(CMD[4]).to.be.equal(0);
+      queueComand.dequeue();
+    });
+
   });
 });

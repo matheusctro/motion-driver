@@ -59,7 +59,7 @@ async function serial() {
           if (arr[1] == 0xAA) {
             queueResponseEncoder.enqueue(arr);
           } else {
-            //console.log(`Recebido: [${arr}]`);
+            console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
           }
         }
@@ -83,8 +83,6 @@ async function serial() {
         }
       }, 3000);
     });
-
-
 
     setInterval(() => {
       if (!queueComand.isEmpty()) {

@@ -1,7 +1,8 @@
-import { calibration, goHome, stop, run, setSize, readPosition, ack, axesFree , execute } from '../cnc/driver';
+import mongoose from 'mongoose';
+import Gains from '../models/gains';
+
+import { calibration, goHome, stop, run, setSize, readPosition, ack, axesFree , execute, updateGains } from '../cnc/driver';
 import {setAllow, readAllow} from '../comunications/serial/allow'
-import queueComand from '../Queue/queueComand';
-import queueResponse from '../Queue/queueResponse';
 
 function sleep(milliseconds) {
   const date = Date.now();
@@ -10,7 +11,6 @@ function sleep(milliseconds) {
     currentDate = Date.now();
   } while (currentDate - date < milliseconds);
 }
-
 
 module.exports = {
   async run(req, res) {
@@ -97,5 +97,70 @@ module.exports = {
       return res.json({ "status": "ok" });
     else
     return res.status(400).json({ "error": "Can't move!" });
+  },
+
+  async updateGain(req, res) {
+    const gains = req.body;
+
+    const gainExists = await Gains.findOne({ motor: gains.motor });
+
+    if(gainExists){
+      gainExists.motor = gains.motor;
+      gainExists.kp = gains.kp;
+      gainExists.kd = gains.kd;
+      gainExists.ki = gains.ki;
+      await gainExists.save();
+    }else{
+      const newGain = await Gains.create({
+        motor: gains.motor,
+        kp: gains.kp,
+        kd: gains.kd,
+        ki: gains.ki,
+      });
+    }
+
+    setAllow(false);
+    let response = await updateGains(gains);
+    setAllow(true);
+
+    if(response){
+      io.emit('/status', "Update realizado com sucesso!");
+      return res.json({"status": "ok"});
+    }else{
+      io.emit('/status', "Updade não pode ser realizado!");
+      return res.status(400).json({ "error": "Updade não pode ser realizado" });
+    }
+  },
+
+  async readGain(req, res) {
+    let gains = [];
+    let flagGains = [false, false, false];
+    let i;
+
+    const gainFind = await Gains.find({});
+
+    for (i = 0; i < gainFind.length; i += 1) {
+      gains.push({
+        'motor': gainFind[i].motor,
+        'kp': gainFind[i].kp,
+        'kd': gainFind[i].kd,
+        'ki': gainFind[i].ki
+      });
+
+      if (gainFind[i].motor == 'x') flagGains[0] = true;
+
+      if (gainFind[i].motor == 'y') flagGains[1] = true;
+
+      if (gainFind[i].motor == 'z') flagGains[2] = true;
+    }
+
+    if (!flagGains[0]) gains.push({ 'motor': 'x', 'kp': 0, 'kd': 0, 'ki': 0 });
+
+    if (!flagGains[1]) gains.push({ 'motor': 'y', 'kp': 0, 'kd': 0, 'ki': 0 });
+
+    if (!flagGains[2]) gains.push({ 'motor': 'z', 'kp': 0, 'kd': 0, 'ki': 0 });
+
+    return res.json(gains);
   }
+
 }

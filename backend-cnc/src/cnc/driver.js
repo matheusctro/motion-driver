@@ -28,6 +28,15 @@ const MM_ABSop = 0xE;
 const PARAM_X = 36;
 const PARAM_Y = 37;
 const PARAM_Z = 38;
+const PARAM_kp_x = 39;
+const PARAM_kd_x = 40;
+const PARAM_ki_x = 41;
+const PARAM_kp_y = 42;
+const PARAM_kd_y = 43;
+const PARAM_ki_y = 44;
+const PARAM_kp_z = 45;
+const PARAM_kd_z = 46;
+const PARAM_ki_z = 47;
 
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
@@ -195,6 +204,70 @@ async function execute(comand) {
     res = await execute_cmd(OPCODE[0][j], OPCODE[1][j]);
     if (!res) return false;
   }
+  return true;
+}
+
+async function updateGains(gains) {
+
+  let VALUE1 = [0x00, 0x00, 0x00];
+  let VALUE0 = [0x00, 0x00, 0x00];
+
+  VALUE0[0] = gains.kp & 0x00FF;
+  VALUE1[0] = gains.kp & 0xFF00;
+
+  VALUE0[1] = gains.kd & 0x00FF;
+  VALUE1[1] = gains.kd & 0xFF00;
+
+  VALUE0[2] = gains.ki & 0x00FF;
+  VALUE1[2] = gains.ki & 0xFF00;
+
+  let res;
+
+  switch(gains.motor){
+    case 'x':
+      res = await set_param_cmd(PARAM_kp_x, VALUE1[0], VALUE0[0]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_kd_x, VALUE1[1], VALUE0[1]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_ki_x, VALUE1[2], VALUE0[2]);
+      if (!res) return false;
+
+      res = await update_cmd();
+      if (!res) return false;
+
+      break;
+    case 'y':
+      res = await set_param_cmd(PARAM_kp_y, VALUE1[0], VALUE0[0]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_kd_y, VALUE1[1], VALUE0[1]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_ki_y, VALUE1[2], VALUE0[2]);
+      if (!res) return false;
+
+      res = await update_cmd();
+      if (!res) return false;
+
+      break;
+    case 'z':
+      res = await set_param_cmd(PARAM_kp_z, VALUE1[0], VALUE0[0]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_kd_z, VALUE1[1], VALUE0[1]);
+      if (!res) return false;
+
+      res = await set_param_cmd(PARAM_ki_z, VALUE1[2], VALUE0[2]);
+      if (!res) return false;
+
+      res = await update_cmd();
+      if (!res) return false;
+
+      break;
+  }
+
   return true;
 }
 
@@ -886,7 +959,7 @@ function waitResponseEncoder(time) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 100);
+    }, 200);
   // }, time);
   });
 }
@@ -906,7 +979,7 @@ async function waitfinish(){
         clearInterval(interval);
         resolve(false);
       }
-    }, 200);
+    }, 100);
   });
 }
 
@@ -923,5 +996,6 @@ module.exports = {
   readPosition,
   ack,
   axesFree,
-  execute
+  execute,
+  updateGains
 }

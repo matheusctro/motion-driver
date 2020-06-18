@@ -18,5 +18,7 @@ routes.post('/position', ComandsController.position);
 routes.post('/calibration', ComandsController.calibration);
 routes.post('/free-axis', ComandsController.freeAxis);
 routes.post('/execute', ComandsController.execute);
+routes.post('/update-gains', ComandsController.updateGain);
+routes.get('/read-gains', ComandsController.readGain);
 
 export default routes
