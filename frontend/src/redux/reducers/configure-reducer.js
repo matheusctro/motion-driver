@@ -13,6 +13,7 @@ const initialState = {
     openModalConfirmationClear:false,
     openModalAlert:false,
     openModalStatus:false,
+    openModalMotorGainsConfig: false,
     status: '',
     command_select: "MOVER",
     command: "MOVER()",
@@ -21,6 +22,7 @@ const initialState = {
     indexNewCommand: 0,
     lengthCalibration: [0, 0, 0],
     nameNewMotion: '',
+    
 }
 
 loadMotions();
@@ -132,6 +134,11 @@ export const ConfigureReducer = (state = initialState, action) => {
             return{
                 ...state,
                 nameNewMotion: action.nameNewMotion
+            }
+        case 'SET_OPEN_MOTOR_GAINS_CONFIG':
+            return{
+                ...state,
+                openModalMotorGainsConfig: action.openModalMotorGainsConfig
             }
 
         default:

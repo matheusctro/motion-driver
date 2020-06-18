@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Menu from '../../general/menu';
 import Topbar from '../../general/topbar';
 import Graph from '../../general/graph';
@@ -30,7 +30,7 @@ const Monitore = (props) => {
     const classes = useStyles();
     const motion_select = useSelector(state => state.configure.motion_select);
     const motions = useSelector(state => state.configure.motions);
-
+    const [loop, setLoop] = useState('');
     
 
     const handleMotion = (e) => {
@@ -49,12 +49,13 @@ const Monitore = (props) => {
      const handleRunMotion = async (e)=>{
         let motion_id
         motions.map(motion => {if(motion.name == motion_select){motion_id = motion.id;}});
-        await api.post(`/run?id=${motion_id}&repetition=1`); 
-        console.log(motion_id);   
+        await api.post(`/run?id=${motion_id}&repetition=${loop}`); 
+          
     }
      
      const handleStopMotion = async (e)=>{
         await api.post(`/stop`);
+        
      }
 
     return (
@@ -80,6 +81,13 @@ const Monitore = (props) => {
                               )
                             }
                             </TextField>
+                        </div>
+                        <div className ="loopMotion">
+                            <input
+                                 placeholder="Número de repetições"
+                                 value={loop}
+                                 onChange={e => setLoop(e.target.value)}
+                            />
                         </div>
                         <div className="real">
                             <div>

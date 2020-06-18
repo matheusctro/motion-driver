@@ -13,6 +13,7 @@ import ConfirmationClearModal from '../../general/modal/confirmationClear';
 import ConfirmationDeleteModal from '../../general/modal/confirmationDelete';
 import AlertModal from '../../general/modal/alert';
 import StatusModal from '../../general/modal/status';
+import MotorGainsConfigModal from '../../general/modal/motorGainsConfig';
 
 import api from '../../services/api';
 import { loadMotions } from '../../actions/index'
@@ -35,6 +36,7 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import BuildIcon from '@material-ui/icons/Build';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
 
 const marks = [
   {
@@ -155,6 +157,10 @@ export default function Configure() {
     dispatch({ type: 'SET_OPEN_MODAL_MOTION', openModalNewMotion: true })
   }
 
+  const handleOpenMotorGains = () => {
+    dispatch({ type: 'SET_OPEN_MOTOR_GAINS_CONFIG', openModalMotorGainsConfig: true })
+  }
+
   const handleOpenNewCommand = () => {
     if (motion_select != '') {
       dispatch({ type: 'SET_INDEX_NEW_COMMAND', indexNewCommand: 0 });
@@ -238,12 +244,12 @@ export default function Configure() {
             <Paper className={classes.paper}>
               <div className="select-container">
                 <TextField className={classes.select}
-                  variant='outlined'
-                  id="select-program"
-                  select
-                  label="Motion"
-                  value={motion_select}
-                  onChange={handleMotion}
+                           variant='outlined'
+                           id="select-program"
+                           select
+                           label="Motion"
+                           value={motion_select}
+                           onChange={handleMotion}
                 >
                   {motions.map(motion => (
                     <MenuItem key={motion.id} value={motion.name}>
@@ -264,6 +270,9 @@ export default function Configure() {
                   </Tooltip>
                   <Tooltip title="Calibrate" enterDelay={150}>
                     <IconButton onClick={handleOpenCalibration}><BuildIcon color="secundary" /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Config Motor Gains" enterDelay={150}>
+                    <IconButton onClick={handleOpenMotorGains} ><EqualizerIcon color="secundary" /></IconButton>
                   </Tooltip>
                   <Tooltip title="Upload" enterDelay={150}>
                     <IconButton onClick={handleUpload}><PublishIcon color="secundary" /></IconButton>
@@ -355,6 +364,7 @@ export default function Configure() {
       <ConfirmationDeleteModal />
       <AlertModal />
       <StatusModal />
+      <MotorGainsConfigModal/>
     </div>
   );
 }
