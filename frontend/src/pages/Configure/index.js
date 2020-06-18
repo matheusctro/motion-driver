@@ -157,8 +157,26 @@ export default function Configure() {
     dispatch({ type: 'SET_OPEN_MODAL_MOTION', openModalNewMotion: true })
   }
 
-  const handleOpenMotorGains = () => {
+  const handleOpenMotorGains = async () => {
+    
+    let response = await api.get('/read-gains');
+    
     dispatch({ type: 'SET_OPEN_MOTOR_GAINS_CONFIG', openModalMotorGainsConfig: true })
+    
+    response.data.map((axis) => {
+      if(axis.motor == 'x'){
+        dispatch({ type: 'SET_PROPORTIONAL_GAIN', proportionalGain: axis.kp})
+        dispatch({ type: 'SET_INTEGRAL_GAIN', integralGain: axis.ki})
+        dispatch({ type: 'SET_DERIVATIVE_GAIN', derivativeGain: axis.kd}) 
+      }                
+    })
+/*
+    console.log(response.data[0].motor);
+    console.log(response.data[0].kp);
+    console.log(response.data[0].ki);
+    console.log(response.data[0].kd);
+*/ 
+    
   }
 
   const handleOpenNewCommand = () => {

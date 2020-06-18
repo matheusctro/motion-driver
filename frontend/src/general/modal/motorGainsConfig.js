@@ -4,7 +4,7 @@ import api from '../../services/api';
 
 import './motorGainsConfig.css';
 import { makeStyles } from '@material-ui/core/styles';
-import { Modal, Fade } from '@material-ui/core';
+import { Modal, Fade, BottomNavigationAction } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -38,6 +38,10 @@ export default function MotorGainsConfigModal() {
     const dispatch = useDispatch();
 
     const openModalMotorGainsConfig = useSelector(state => state.configure.openModalMotorGainsConfig);
+    const motorSelect = useSelector(state => state.modalGains.motorSelect);
+    const proportionalGain = useSelector(state => state.modalGains.proportionalGain);
+    const integralGain = useSelector(state => state.modalGains.integralGain);
+    const derivativeGain = useSelector(state => state.modalGains.derivativeGain);
     //const lengthCalibration = useSelector(state => state.configure.lengthCalibration);
 
     const handleCloseModal = () => {
@@ -45,16 +49,79 @@ export default function MotorGainsConfigModal() {
     }
 
     const handleMotorGainsConfig = async () => {
-        /*await api.post(`/calibration?sizeX=${lengthCalibration[0]}&sizeY=${lengthCalibration[1]}&sizeZ=${lengthCalibration[2]}`);*/
 
         dispatch({ type: 'SET_OPEN_MOTOR_GAINS_CONFIG', openModalMotorGainsConfig: false })
+
+        let data = {
+            motor: '',
+            kp: proportionalGain,
+            ki: integralGain,
+            kd: derivativeGain,
+        }
+
+        switch(motorSelect){
+            case 'Motor eixo X':
+                data.motor = 'x'
+            break
+
+            case 'Motor eixo Y':
+                data.motor = 'y'
+            break
+
+            case 'Motor eixo Z':
+                data.motor = 'z'
+            break        
+        }
+        
+        await api.post('update-gains', data)
+        /*{"motor": "y", "kp": 100, "kd" : 70, "ki": 1}*/
+
+        
     }
 
-    const handleChange = (event) => {
-        setCurrency(event.target.value);
-    };
+    const handleMotorSelect = async (event) => {
 
-    const [currency, setCurrency] = React.useState('EUR');
+        let response = await api.get('/read-gains');
+
+        dispatch({type: 'SET_SELECT_MOTOR_AXIS', motorSelect: event.target.value})
+
+        switch(event.target.value){
+            case 'Motor eixo X':
+                response.data.map((axis) => {
+                    if(axis.motor == 'x'){
+                        dispatch({ type: 'SET_PROPORTIONAL_GAIN', proportionalGain: axis.kp})
+                        dispatch({ type: 'SET_INTEGRAL_GAIN', integralGain: axis.ki })
+                        dispatch({ type: 'SET_DERIVATIVE_GAIN', derivativeGain: axis.kd}) 
+                    }                
+                })
+            break
+
+            case 'Motor eixo Y':
+                    response.data.map((axis) => {
+                        if(axis.motor == 'y'){
+                            dispatch({ type: 'SET_PROPORTIONAL_GAIN', proportionalGain: axis.kp})
+                            dispatch({ type: 'SET_INTEGRAL_GAIN', integralGain: axis.ki })
+                            dispatch({ type: 'SET_DERIVATIVE_GAIN', derivativeGain: axis.kd}) 
+                        }                
+                    }) 
+            break
+
+            case 'Motor eixo Z':
+                    response.data.map((axis) => {
+                        if(axis.motor == 'z'){
+                            dispatch({ type: 'SET_PROPORTIONAL_GAIN', proportionalGain: axis.kp})
+                            dispatch({ type: 'SET_INTEGRAL_GAIN', integralGain: axis.ki })
+                            dispatch({ type: 'SET_DERIVATIVE_GAIN', derivativeGain: axis.kd}) 
+                        }                
+                    })                
+            break        
+        }
+
+        
+            
+    };
+    
+
 
     const motors = [
         {
@@ -70,28 +137,19 @@ export default function MotorGainsConfigModal() {
           value: 'Motor eixo Z',
         },
       ];
-/*
-    const handle_x = (event) => {
-        let length = lengthCalibration;
-        length[0] = event.target.value;
 
-        dispatch({ type: 'SET_CALIBRATION', lengthCalibration: length });
+    const handleProportionalGain = (event) => {
+        dispatch({ type: 'SET_PROPORTIONAL_GAIN', proportionalGain: event.target.value})  
     }
 
-    const handle_y = (event) => {
-        let length = lengthCalibration;
-        length[1] = event.target.value;
-
-        dispatch({ type: 'SET_CALIBRATION', lengthCalibration: length });
+    const handleIntegralGain = (event) => {
+        dispatch({ type: 'SET_INTEGRAL_GAIN', integralGain: event.target.value })
     }
 
-    const handle_z = (event) => {
-        let length = lengthCalibration;
-        length[2] = event.target.value;
-
-        dispatch({ type: 'SET_CALIBRATION', lengthCalibration: length });
+    const handleDerivativeGain = (event) => {
+        dispatch({ type: 'SET_DERIVATIVE_GAIN', derivativeGain: event.target.value}) 
     }
-*/
+
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -111,13 +169,13 @@ export default function MotorGainsConfigModal() {
                                    id="select-motor"
                                    select
                                    label="Selecione o motor"
-                                   value={currency}
-                                   onChange={handleChange}
+                                   value={motorSelect}
+                                   onChange={handleMotorSelect}
                                    variant="outlined"
                         >
                         {motors.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                                {option.label}
                             </MenuItem>
                         ))}
                         </TextField>
@@ -125,11 +183,11 @@ export default function MotorGainsConfigModal() {
                     <div className="modal-body-gains">
                         <div className="gainsConfig">
                             <label>Ganho proporcional(Kp):</label>
-                            <input type="number" className="input-gain" /*onChange={handle_x}*/ />
+                            <input type="number" className="input-gain" value={proportionalGain} onChange={handleProportionalGain}/>
                             <label>Ganho Integral(Ki):</label>
-                            <input type="number" className="input-gain" /*onChange={handle_y}*/ />
+                            <input type="number" className="input-gain" value={integralGain} onChange={handleIntegralGain}/>
                             <label>Ganho derivativo(Kd):</label>
-                            <input type="number" className="input-gain" /*onChange={handle_z}*/ />
+                            <input type="number" className="input-gain" value={derivativeGain} onChange={handleDerivativeGain}/>
                         </div>
                     </div>
 

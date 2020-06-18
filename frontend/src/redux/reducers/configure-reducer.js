@@ -140,7 +140,7 @@ export const ConfigureReducer = (state = initialState, action) => {
                 ...state,
                 openModalMotorGainsConfig: action.openModalMotorGainsConfig
             }
-
+        
         default:
             return { ...state }
     }
