@@ -1,4 +1,4 @@
-.modal{
+.modal-motorgains{
     width: 373px;
     height: 430px;
     background: white;
@@ -9,7 +9,7 @@
     display: grid;
 }
 
-.modal-header {
+.modal-header-gainsconfig {
     font: 200 18px Roboto, sans-serif;
     color: #222;
     line-height: 20px;
@@ -21,20 +21,17 @@
     border-bottom-color:rgb(238, 238, 238);
 }
 
+.motor-selection{
+    padding: 10px;
+    display: flex;
+    
+}
+
 .modal-body-gains{
     text-align: center;
     align-content: flex;
     padding: 10px;
     height: 252px;
-}
-
-.modal-footer{
-    padding: 5px;
-    text-align:  right ;
-    align-content: right;
-    height: 50px;
-    background: rgb(238, 238, 238);
-    border-radius: 8px;
 }
 
 .gainsConfig > label {
@@ -43,12 +40,6 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-}
-
-.motor-selection{
-    padding: 10px;
-    display: flex;
-    
 }
 
 .input-gain{
@@ -62,27 +53,16 @@
     height: 30px;
 }
 
-.btn-salvar {
-    padding: 5px 12px;
-    font: 400 13px Roboto, sans-serif;
-    line-height: 20px;
-    cursor: pointer;
-    border: 0;
-    border-radius: 4px;
-    margin-top: 5px;
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    transition: filter 0.2s;
-    background: #3660FE;
-    /* background-image: linear-gradient(to bottom, #00a7e6 0%, #0096cc 100%); */
-    color: white;
-    width: 90px;
-    height: 30px;
-    margin: 5px;
+.modal-footer-gainsconfig{
+    padding: 5px;
+    text-align:  right ;
+    align-content: right;
+    height: 50px;
+    background: rgb(238, 238, 238);
+    border-radius: 8px;
 }
 
-.btn-cancelar {
+.btn-cancelar-gainsconfig {
     padding: 5px 12px;
     font: 400 13px Roboto, sans-serif;
     line-height: 20px;
@@ -101,3 +81,22 @@
     margin: 5px;
 }
 
+.btn-salvar-gainsconfig {
+    padding: 5px 12px;
+    font: 400 13px Roboto, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px;
+    margin-top: 5px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: filter 0.2s;
+    background: #3660FE;
+    /* background-image: linear-gradient(to bottom, #00a7e6 0%, #0096cc 100%); */
+    color: white;
+    width: 90px;
+    height: 30px;
+    margin: 5px;
+}

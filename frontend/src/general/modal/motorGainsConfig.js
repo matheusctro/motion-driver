@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MotorGainsConfigModal() {
+
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -116,13 +117,8 @@ export default function MotorGainsConfigModal() {
                     })                
             break        
         }
-
-        
-            
     };
     
-
-
     const motors = [
         {
           label: 'Motor eixo X',
@@ -157,11 +153,10 @@ export default function MotorGainsConfigModal() {
             className={classes.modal}
             open={openModalMotorGainsConfig}
             onClose={handleCloseModal}
-
         >
             <Fade in={openModalMotorGainsConfig}>
-                <div className="modal">
-                    <div className="modal-header">
+                <div className="modal-motorgains">
+                    <div className="modal-header-gainsconfig">
                         <p>Configuração dos ganhos</p>
                     </div>
                     <div className="motor-selection">
@@ -191,9 +186,9 @@ export default function MotorGainsConfigModal() {
                         </div>
                     </div>
 
-                    <div className="modal-footer">
-                        <button className="btn-cancelar" onClick={handleCloseModal}> Cancelar </button>
-                        <button className="btn-salvar" onClick={handleMotorGainsConfig}> Salvar </button>
+                    <div className="modal-footer-gainsconfig">
+                        <button className="btn-cancelar-gainsconfig" onClick={handleCloseModal}> Cancelar </button>
+                        <button className="btn-salvar-gainsconfig" onClick={handleMotorGainsConfig}> Salvar </button>
                     </div>
                 </div>
             </Fade>
