@@ -61,7 +61,7 @@ async function serial() {
             queueResponseEncoder.enqueue(arr);
           } else  if (arr[1] == 0xA9) {
             queueResponseAck.enqueue(arr);
-            console.log(`Recebido: [${arr}]`);
+            // console.log(`Recebido: [${arr}]`);
           }else{
             // console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
