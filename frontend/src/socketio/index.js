@@ -18,6 +18,10 @@ io.on('/status', Data =>{
     Store.dispatch({ type: 'SET_STATUS', status: Data });
 })
 
+io.on('/ack', Data =>{
+    console.log(Data);
+})
+
 io.on('/CNC', Data =>{
     let print = "CNC " + Data + "!";
     Store.dispatch({ type: 'SET_OPEN_MODAL_STATUS', openModalStatus: true });

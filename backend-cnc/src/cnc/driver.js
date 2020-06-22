@@ -41,6 +41,7 @@ const PARAM_ki_z = 47;
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
 import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
+import queueResponseAck from '../../src/Queue/queueResponseAck';
 import { listen } from 'socket.io';
 
 async function calibration() {
@@ -901,7 +902,7 @@ async function ack_cmd() {
   const CMD = [0x3E, ACKcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(70);
+  const res = await waitResponseAck(70);
 
   if ((res[1] == ACKcmd) && (res[2] == 0xC0)) {
     return res[3];
@@ -924,7 +925,7 @@ async function axesFree_cmd(mode) {
   }
 }
 
-function waitResponse(time) {
+function waitResponse(time){
   let cont = 0;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
@@ -953,6 +954,27 @@ function waitResponseEncoder(time) {
         clearInterval(interval);
         let response = queueResponseEncoder.peek();
         queueResponseEncoder.dequeue();
+        resolve(response);
+      }
+      if(cont > 10 ){
+        clearInterval(interval);
+        resolve([0x00]);
+      }
+    }, 200);
+  // }, time);
+  });
+}
+
+
+function waitResponseAck(time) {
+  let cont = 0;
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      cont++;
+      if (!queueResponseAck.isEmpty()) {
+        clearInterval(interval);
+        let response = queueResponseAck.peek();
+        queueResponseAck.dequeue();
         resolve(response);
       }
       if(cont > 10 ){

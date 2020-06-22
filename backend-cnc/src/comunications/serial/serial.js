@@ -4,6 +4,7 @@ import ByteLength from '@serialport/parser-byte-length';
 import queueComand from '../../Queue/queueComand';
 import queueResponse from '../../Queue/queueResponse';
 import queueResponseEncoder from '../../Queue/queueResponseEncoder';
+import queueResponseAck from '../../Queue/queueResponseAck';
 import findSerial from './findSerial';
 
 async function serial() {
@@ -58,8 +59,11 @@ async function serial() {
           for (i; i < 6; i++) arr[i] = data[i];
           if (arr[1] == 0xAA) {
             queueResponseEncoder.enqueue(arr);
-          } else {
+          } else  if (arr[1] == 0xA9) {
+            queueResponseAck.enqueue(arr);
             console.log(`Recebido: [${arr}]`);
+          }else{
+            // console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
           }
         }
