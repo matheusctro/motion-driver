@@ -53,13 +53,6 @@ export default function MotorGainsConfigModal() {
 
         dispatch({ type: 'SET_OPEN_MOTOR_GAINS_CONFIG', openModalMotorGainsConfig: false })
 
-        let data = {
-            motor: '',
-            kp: proportionalGain,
-            ki: integralGain,
-            kd: derivativeGain,
-        }
-
         switch(motorSelect){
             case 'Motor eixo X':
                 data.motor = 'x'
@@ -73,11 +66,16 @@ export default function MotorGainsConfigModal() {
                 data.motor = 'z'
             break        
         }
-        
-        await api.post('update-gains', data)
-        /*{"motor": "y", "kp": 100, "kd" : 70, "ki": 1}*/
 
-        
+        let data = {
+            motor: '',
+            kp: proportionalGain,
+            ki: integralGain,
+            kd: derivativeGain,
+        }
+
+        await api.post('update-gains', data)
+
     }
 
     const handleMotorSelect = async (event) => {

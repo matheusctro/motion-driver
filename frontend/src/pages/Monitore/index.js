@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FiAlertCircle } from 'react-icons/fi';
 import { loadMotions } from '../../actions/index';
 import api from '../../services/api';
+import AlertModal from '../../general/modal/alert';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -43,13 +44,22 @@ const Monitore = (props) => {
               dispatch({ type: 'COMMANDS', commands: motion.cmmds });
             }
           });
-        }
+        } 
       }
     
      const handleRunMotion = async (e)=>{
         let motion_id
-        motions.map(motion => {if(motion.name == motion_select){motion_id = motion.id;}});
-        await api.post(`/run?id=${motion_id}&repetition=${loop}`); 
+        motions.map(motion => {
+            if(motion.name == motion_select){
+                motion_id = motion.id;
+            }});
+            if(motion_select != ''){
+                await api.post(`/run?id=${motion_id}&repetition=${loop}`); 
+            } else {
+                dispatch({ type: 'SET_OPEN_MODAL_ALERT', openModalAlert: true });
+                console.log(motion_select);
+            }
+        
           
     }
      
@@ -109,6 +119,7 @@ const Monitore = (props) => {
                     </section>
                 </Paper>
             </div>
+            <AlertModal/>
         </Menu>
     );
 }
