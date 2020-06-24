@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import Menu from '../../general/menu';
 import Topbar from '../../general/topbar';
 import Graph from '../../general/graph';
@@ -12,6 +12,7 @@ import api from '../../services/api';
 import AlertModal from '../../general/modal/alert';
 
 import { makeStyles } from '@material-ui/core/styles';
+import { red, green, grey } from '@material-ui/core/colors';
 
 //import Card from '@material-ui/core/Card';
 //import CardContent from '@material-ui/core/CardContent';
@@ -23,16 +24,67 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '10px',
         marginBottom: '10px',
       }
+
 }));
 
 const Monitore = (props) => {
+    //let color;
+    //Store.dispatch({ type: 'SET_COLOR_STATUS_VALUE', colorStatus: Data});
 
+    //const colorStatus = useSelector(state => state.general.colorStatus);
     const dispatch = useDispatch();
     const classes = useStyles();
     const motion_select = useSelector(state => state.configure.motion_select);
     const motions = useSelector(state => state.configure.motions);
-    const [loop, setLoop] = useState('');
+    const colorStatus = useSelector(state => state.general.colorStatus);
     
+    const [loop, setLoop] = useState('');
+    const [color, setColor] = useState('');
+    
+
+    useEffect(() => {
+        let selectedColor
+
+        switch(colorStatus){
+            case 0:  
+                selectedColor = '#cccccc';
+            break
+
+            case 1:
+                selectedColor = 'rgb(4, 156, 54)';
+            break
+
+            case 3:
+                selectedColor = 'red';
+            break        
+        }
+
+        console.log(selectedColor)
+        setColor(selectedColor)
+        
+    })
+
+    // const handleColorStatus = () => {
+    //     //let color;
+    //     //console.log(typeof color);
+    //     switch(colorStatus){
+    //         case 0:  
+    //             color = '#cccccc';
+                
+    //         break
+
+    //         case 1:
+    //             color = 'rgb(4, 156, 54)';
+    //         break
+
+    //         case 3:
+    //             color = 'red';
+    //         break        
+    //     }
+    //     console.log(color);
+    //     console.log(typeof color);
+    //     return(color);
+    // }
 
     const handleMotion = (e) => {
           loadMotions();
@@ -54,16 +106,19 @@ const Monitore = (props) => {
                 motion_id = motion.id;
             }});
             if(motion_select != ''){
+                console.log(colorStatus);
                 await api.post(`/run?id=${motion_id}&repetition=${loop}`); 
+                
             } else {
                 dispatch({ type: 'SET_OPEN_MODAL_ALERT', openModalAlert: true });
-                console.log(motion_select);
             }
         
           
     }
      
      const handleStopMotion = async (e)=>{
+
+        console.log(colorStatus)
         await api.post(`/stop`);
         
      }
@@ -114,7 +169,7 @@ const Monitore = (props) => {
                             <button className="button2" type="submit" onClick={handleStopMotion}>Parar</button>
                         </div>
                         <div className="icon">
-                            <FiAlertCircle size={256} color="#cccccc" strokeWidth="1px" />
+                            <FiAlertCircle size={256} color={color} strokeWidth="1px" />
                         </div>
                     </section>
                 </Paper>

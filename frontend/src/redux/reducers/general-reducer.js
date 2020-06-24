@@ -1,6 +1,7 @@
 const initialState = {
     openSidebar: false,
-    page: 'Monitoramento'
+    page: 'Monitoramento',
+    colorStatus: 0,
 }
 
 export const GeneralReducer = (state = initialState, action) => {
@@ -13,6 +14,8 @@ export const GeneralReducer = (state = initialState, action) => {
             return { ...state, openSidebar: false };
         case 'ON_CHANGE_PAGE':
             return { ...state, page: action.page, openSidebar: false };
+        case 'SET_COLOR_STATUS_VALUE':
+            return {...state, colorStatus: action.colorStatus};
         default:
             return { ...state }
     }

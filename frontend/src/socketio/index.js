@@ -20,6 +20,7 @@ io.on('/status', Data =>{
 
 io.on('/ack', Data =>{
     console.log(Data);
+    Store.dispatch({ type: 'SET_COLOR_STATUS_VALUE', colorStatus: Data});
 })
 
 io.on('/CNC', Data =>{
