@@ -48,7 +48,6 @@ setInterval(async () => {
   let encoder;
   if(readAllow()){
     setAllow(false);
-    setAllow(false); 
     encoder = await readPosition();
     setAllow(true);
     io.emit('/encoder', encoder);
@@ -58,8 +57,7 @@ setInterval(async () => {
 setInterval(async ()=>{
   let ackResponse;
   ackResponse = await ack();
-  setAllow(true);
   io.emit('/ack', ackResponse);
-}, 1500);
+}, 1000);
 
 // taskkill /f /im node.exe

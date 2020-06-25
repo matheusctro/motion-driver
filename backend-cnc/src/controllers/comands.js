@@ -14,7 +14,6 @@ function sleep(milliseconds) {
 
 module.exports = {
   async run(req, res) {
-    setAllow(false);
     const runParam = req.query;
     let response;
 
@@ -28,7 +27,7 @@ module.exports = {
         res.status(400).json({ "error": "Can't RUN" });
       }
     }
-    setAllow(true);
+
     return;
   },
 

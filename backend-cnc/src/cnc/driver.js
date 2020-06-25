@@ -1001,7 +1001,7 @@ async function waitfinish(){
         clearInterval(interval);
         resolve(false);
       }
-    }, 100);
+    }, 300);
   });
 }
 
@@ -1019,5 +1019,5 @@ module.exports = {
   ack,
   axesFree,
   execute,
-  updateGains
+  updateGains,
 }
