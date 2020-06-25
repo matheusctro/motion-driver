@@ -22,6 +22,7 @@
 }
 
 .real {
+
     grid-column: 2;
     grid-row: 1 / span 2;
 }
@@ -73,29 +74,42 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 25px;
 }
 
 .form2{        
         width: 100%;
         min-width: 800px;
-
 }
-
 .commandList{
-    margin-bottom: 30px;
+    padding: 10px;
+   /* margin-bottom: 30px;*/
+    display: flex;
+    width: 800px;
+    /*align-content: center;*/
+    /*margin-bottom: 30px;*/
+    align-items: center;
+    /*vertical-align: middle;*/
+    
 }
-
 .icon{
    margin-top: 60px;
 }
-.status1{
-    background-color: #cccccc;
-  }
-
-.status2{
-    background-color: red;
-  }
-
-.status3{
-    background-color: rgb(4, 156, 54)
-  }
+.loopEntrance{
+    border: 10px solid white;
+    font: roboto;
+    font-size: 17px;
+    width: 200px;
+    
+}
+.loopMotion{
+    border: 1.2px solid #cccccc;
+    border-radius: 4px;
+    height: 55.5px;
+    width: 300px;
+    margin-left: 10px;
+    /*padding: 10px;*/
+    margin-bottom: 10px;
+    margin-top: 30px;
+    
+}

@@ -2,6 +2,8 @@ const initialState = {
     openSidebar: false,
     page: 'Monitoramento',
     colorStatus: 0,
+    loopValue: '',
+    iconColor: '',
 }
 
 export const GeneralReducer = (state = initialState, action) => {
@@ -16,6 +18,10 @@ export const GeneralReducer = (state = initialState, action) => {
             return { ...state, page: action.page, openSidebar: false };
         case 'SET_COLOR_STATUS_VALUE':
             return {...state, colorStatus: action.colorStatus};
+        case 'SET_LOOP_VALUE':
+            return{...state, loopValue: action.loopValue};
+        case 'SET_ICON_COLOR':
+            return{...state, iconColor: action.iconColor};
         default:
             return { ...state }
     }

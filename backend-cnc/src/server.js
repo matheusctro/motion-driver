@@ -16,8 +16,9 @@ app.use(cors());
 
 import routes from './routes';
 import serial from './comunications/serial/serial';
-import {readPosition} from './cnc/driver';
-import {setAllow, readAllow} from './comunications/serial/allow'
+import {readPosition, ack} from './cnc/driver';
+//import {readPosition} from './cnc/driver';
+import {setAllow, readAllow} from './comunications/serial/allow';
 
 // Mongo DB
 var mongoose = require('mongoose');
@@ -46,11 +47,19 @@ serial();
 setInterval(async () => {
   let encoder;
   if(readAllow()){
+    setAllow(false);
     setAllow(false); 
     encoder = await readPosition();
     setAllow(true);
     io.emit('/encoder', encoder);
   }
 },300);
+
+setInterval(async ()=>{
+  let ackResponse;
+  ackResponse = await ack();
+  setAllow(true);
+  io.emit('/ack', ackResponse);
+}, 1500);
 
 // taskkill /f /im node.exe

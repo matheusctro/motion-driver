@@ -20,7 +20,7 @@ import { red, green, grey } from '@material-ui/core/colors';
 const useStyles = makeStyles((theme) => ({
       select: {
         height: '35px',
-        width: '800px',
+        width: '500px',
         marginTop: '10px',
         marginBottom: '10px',
       }
@@ -28,24 +28,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Monitore = (props) => {
-    //let color;
-    //Store.dispatch({ type: 'SET_COLOR_STATUS_VALUE', colorStatus: Data});
 
-    //const colorStatus = useSelector(state => state.general.colorStatus);
     const dispatch = useDispatch();
     const classes = useStyles();
     const motion_select = useSelector(state => state.configure.motion_select);
     const motions = useSelector(state => state.configure.motions);
     const colorStatus = useSelector(state => state.general.colorStatus);
-    
-    const [loop, setLoop] = useState('');
-    const [color, setColor] = useState('');
-    
+    const loopValue = useSelector(state => state.general.loopValue);
+    const iconColor = useSelector(state => state.general.iconColor);
 
+    
     useEffect(() => {
         let selectedColor
 
         switch(colorStatus){
+
             case 0:  
                 selectedColor = '#cccccc';
             break
@@ -60,9 +57,10 @@ const Monitore = (props) => {
         }
 
         console.log(selectedColor)
-        setColor(selectedColor)
+        dispatch({ type: 'SET_ICON_COLOR', iconColor: selectedColor});
+        /*setColor(selectedColor)*/
         
-    })
+    },  [colorStatus])
 
     // const handleColorStatus = () => {
     //     //let color;
@@ -100,18 +98,25 @@ const Monitore = (props) => {
       }
     
      const handleRunMotion = async (e)=>{
+        
+        dispatch({ type: 'SET_LOOP_VALUE', loopValue: e.target.value });
+        
         let motion_id
         motions.map(motion => {
             if(motion.name == motion_select){
                 motion_id = motion.id;
             }});
-            if(motion_select != ''){
-                console.log(colorStatus);
-                await api.post(`/run?id=${motion_id}&repetition=${loop}`); 
-                
-            } else {
-                dispatch({ type: 'SET_OPEN_MODAL_ALERT', openModalAlert: true });
-            }
+            
+                if(motion_select != ''){
+                    console.log(colorStatus);
+                    if(loopValue <= 0 || loopValue == ''){
+                        await api.post(`/run?id=${motion_id}&repetition=1`);
+                    } else {
+                        await api.post(`/run?id=${motion_id}&repetition=${loopValue}`);
+                    }
+                } else {
+                    dispatch({ type: 'SET_OPEN_MODAL_ALERT', openModalAlert: true });
+                }
         
           
     }
@@ -146,14 +151,15 @@ const Monitore = (props) => {
                               )
                             }
                             </TextField>
+                            <div className ="loopMotion">
+                                <input className="loopEntrance"
+                                       placeholder="Número de repetições"
+                                       value={loopValue}
+                                       onChange={e => dispatch({ type: 'SET_LOOP_VALUE', loopValue: e.target.value })}
+                                />
+                            </div>
                         </div>
-                        <div className ="loopMotion">
-                            <input
-                                 placeholder="Número de repetições"
-                                 value={loop}
-                                 onChange={e => setLoop(e.target.value)}
-                            />
-                        </div>
+                        
                         <div className="real">
                             <div>
                                 <h1>Tempo-Real</h1>
@@ -169,7 +175,7 @@ const Monitore = (props) => {
                             <button className="button2" type="submit" onClick={handleStopMotion}>Parar</button>
                         </div>
                         <div className="icon">
-                            <FiAlertCircle size={256} color={color} strokeWidth="1px" />
+                            <FiAlertCircle size={256} color={iconColor} strokeWidth="1px" />
                         </div>
                     </section>
                 </Paper>
