@@ -17,6 +17,7 @@
 .z {
     transform: rotate(-90deg);
     transform-origin: 0 30%;
+   
 }
 
 .graph {
@@ -31,9 +32,13 @@
 }
 
 .coordinates{
-    width: 26%;
+    width: 100%;
     display: flex;
-    align-items: center;
+    padding-left: 10px;
+    
+color: rgb(88, 86, 86);
+    
+    /* align-items: center; */
     /*justify-content: space-between;*/
     flex-direction: column;
     

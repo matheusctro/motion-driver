@@ -86,22 +86,6 @@ module.exports = {
   },
 
   async read(req, res){
-    // let motion = {
-    //   "id": 12,
-    //   "name": "Programa 12",
-    //   "qtd_cmmds": 0,
-    //   "cmmds": [
-    //   ]
-    // }
-
-    // let i;
-    // for(i=12; i < 64; i ++){
-    //   motion.id  = i;
-    //   motion.name = "Programa " + i;
-    //   console.log(motion);
-    //   await write(motion);
-    // }
-
     let motions = [];
 
     let i;

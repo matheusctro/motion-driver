@@ -117,7 +117,13 @@ async function write(programa) {
   let OPCODE = [];
   OPCODE = decode(CMDS);
 
-  let res = await load_cmd(MOTION);
+  let res = await execute_cmd(0x50, 0x00);
+  if (!res) return false;
+
+  res = await waitfinish();
+  if (!res) return false;
+
+  res = await load_cmd(MOTION);
   if (!res) return false;
 
   var j = 0;
@@ -794,6 +800,7 @@ async function execute_cmd(OPCODE1, OPCODE2) {
   if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
     return true;
   } else {
+    console.log(`Erro: ${res}`);
     return false;
   }
 }
@@ -940,7 +947,7 @@ function waitResponse(time){
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 100);
+    }, 200);
   // }, time);
   });
 }
@@ -1001,7 +1008,7 @@ async function waitfinish(){
         clearInterval(interval);
         resolve(false);
       }
-    }, 300);
+    }, 500);
   });
 }
 

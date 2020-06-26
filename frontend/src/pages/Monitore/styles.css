@@ -1,62 +1,54 @@
 .grid-container {
-
-    grid-template-columns: auto auto;
+    grid-template-columns: 60% 40%;
     display: grid;
-    padding: 10px;
     grid-gap: 10px;
-  
 }
+
+.form1 {
+    text-align: center;
+    width: 100%;
+    padding:10px;
+}
+
+.form2{        
+    width: 100%;
+    text-align: center;
+    padding:20px;
+    /* min-width: 800px; */
+}
+
+.commandList{
+    /* margin-bottom: 30px;*/
+     display: flex;
+     /* margin-right: 10px; */
+     /* width: 800px; */
+     /*align-content: center;*/
+     /*margin-bottom: 30px;*/
+     align-items: center;
+     /*vertical-align: middle;*/
+ }
+
 .loopMotion{
     display: flex;
-
 }
+
 .loopMotion > div{
     font: 400 14px Roboto, sans-serif;
 }
 
-.grid-container > div {
-    /* background-color: rgba(255, 255, 255, 0.8); */
-    text-align: center;
-    /* font-size: 40px; */
-    /* padding: 20px 0; */
-}
-
 .real {
-
-    grid-column: 2;
-    grid-row: 1 / span 2;
+    text-align: left;
 }
 
-.button2{
-    width: 800px;
-    height: 60px;
-    background: red;
-    border: 0;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 700;
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    font-size: 18px;
-    line-height: 60px;
-    transition: filter 0.2s;
-    margin-top: 50px;
-}
-
-.button2:hover{
-    filter: brightness(90%);
-}
-
-.button3{
-    width: 800px;
+.button-monitore{
+    width: 100%;
     height: 60px;
     background: #3660FE;
     border: 0;
     border-radius: 8px;
     color: #fff;
     font-weight: 700;
-    margin-top: 50px;
+    margin: 10px;
     display: inline-block;
     text-align: center;
     text-decoration: none;
@@ -64,8 +56,7 @@
     line-height: 60px;
     transition: filter 0.2s;
 }
-
-.button3:hover{
+.button-monitore:hover{
     filter: brightness(90%);
 }
 
@@ -74,34 +65,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px;
 }
 
-.form2{        
-        width: 100%;
-        min-width: 800px;
-}
-.commandList{
-    padding: 10px;
-   /* margin-bottom: 30px;*/
-    display: flex;
-    width: 800px;
-    /*align-content: center;*/
-    /*margin-bottom: 30px;*/
-    align-items: center;
-    /*vertical-align: middle;*/
-    
-}
+
+
 .icon{
    margin-top: 60px;
 }
+
 .loopEntrance{
     border: 10px solid white;
     font: roboto;
     font-size: 17px;
     width: 200px;
-    
 }
+
 .loopMotion{
     border: 1.2px solid #cccccc;
     border-radius: 4px;
@@ -111,5 +89,4 @@
     /*padding: 10px;*/
     margin-bottom: 10px;
     margin-top: 30px;
-    
 }

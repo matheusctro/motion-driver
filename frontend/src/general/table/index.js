@@ -39,8 +39,8 @@ function createData(sequence, cmmd) {
 const useStyles = makeStyles((theme) => ({
     cels: {
         // outline: '1px solid black',
-        fontSize: '18px',
-        padding: 10,
+        fontSize: '16px',
+        padding: 5,
         // margin: 0,
         color:'#4d4d4d',
         align: 'center',
@@ -160,7 +160,7 @@ export default function ProgramTable () {
             <TableBody>
                 { rows.map( (row) => (
                     <TableRow hover role="checkbox" tabIndex={-1}>
-                        <TableCell className={classes.cels} align='center' style={{width: '80px'}}>
+                        <TableCell className={classes.cels} align='center' style={{width: '100px', fontSize: '16px'}}>
                             <IconButton onClick = { () => {handleExecuteCommand(row)}} ><PlayArrowIcon color="secundary" /></IconButton>
                         </TableCell>
                         {columns.map( (column) => {
@@ -171,7 +171,7 @@ export default function ProgramTable () {
                                 </TableCell>
                             );
                         })}
-                        <TableCell className={classes.cels} align='center' style={{minWidth: '128px'}}>
+                        <TableCell className={classes.cels} align='center' style={{minWidth: '128px', fontSize: '16px'}}>
                             <IconButton onClick = { () => {handleEditCommand(row)} }><EditIcon color="secundary" /></IconButton>
                             <IconButton onClick = { () => {handleDeleteCommand(row)} }><DeleteIcon color="secundary" /></IconButton>
                         </TableCell>

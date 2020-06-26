@@ -91,7 +91,9 @@ async function serial() {
     setInterval(() => {
       if (!queueComand.isEmpty()) {
         let sendData = queueComand.peek();
-        // console.log(`Enviado: [${sendData}]`);
+
+        if (sendData[1]!= 0xA9 && sendData[1]!= 0xAA)  console.log(`Enviado: [${sendData}]`);
+
         port.write([sendData[0]]);
         port.write([sendData[1]]);
         port.write([sendData[2]]);

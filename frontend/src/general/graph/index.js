@@ -36,27 +36,29 @@ const Graph = () => {
 
     return (
         <div>
+
             <div className="coordinates">
                 <div className="xCoord">
-                    Eixo X: {encoder[0]}mm     
+                    Posição X: {encoder[0]}mm
                 </div>
                 <div className="yCoord">
-                    Eixo Y: {encoder[1]}mm
+                    Posição Y: {encoder[1]}mm
                 </div>
                 <div className="zCoord">
-                    Eixo Z: {encoder[2]}mm
+                    Posição Z: {encoder[2]}mm
                 </div>
             </div>
+            
             <div className="graph">
                 <Paper className={classes.graphposition}>
                     <div className="x">
-                        <BorderLinearProgress variant="determinate" value={100*encoder[0]/120} axis="x" />
+                        <BorderLinearProgress variant="determinate" value={100 * encoder[0] / 120} axis="x" />
                     </div>
                     <div className="y">
-                        <BorderLinearProgress variant="determinate" value={100*encoder[1]/120} axis="y" />
+                        <BorderLinearProgress variant="determinate" value={100 * encoder[1] / 120} axis="y" />
                     </div>
                     <div className="z">
-                        <BorderLinearProgress variant="determinate" value={100*encoder[2]/120} axis="z" />
+                        <BorderLinearProgress variant="determinate" value={100 * encoder[2] / 120} axis="z" />
                     </div>
                 </Paper>
             </div>
