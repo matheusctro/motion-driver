@@ -43,7 +43,6 @@ export default function MotorGainsConfigModal() {
     const proportionalGain = useSelector(state => state.modalGains.proportionalGain);
     const integralGain = useSelector(state => state.modalGains.integralGain);
     const derivativeGain = useSelector(state => state.modalGains.derivativeGain);
-    //const lengthCalibration = useSelector(state => state.configure.lengthCalibration);
 
     const handleCloseModal = () => {
         dispatch({ type: 'SET_OPEN_MOTOR_GAINS_CONFIG', openModalMotorGainsConfig: false })

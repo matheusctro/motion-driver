@@ -32,9 +32,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const commandsTypes = ['MOVER', 'MOVER_ABS', 'ACIONAR', 'DESACIONAR', 'CONFIRMA', 'ESPERAR'];
+const commandsTypes = ['MOVER', 'MOVER_ABS', 'ACIONAR', 'DESACIONAR', 'CONFIRMA', 'ESPERAR', 'INTERPOLAR', 'INTERPOLAR_ABS'];
 
 const uncode = (cmmd) => {
+
     let cmd;
     let param;
     let comando;
@@ -50,7 +51,7 @@ const uncode = (cmmd) => {
                 comando = { 'mover': "INICIO" };
             } else if (param == "FIM") {
                 comando = { 'mover': "FIM" };
-            }else{
+            } else {
                 let step = [];
                 index = param.indexOf(",");
                 step[0] = param.slice(0,index);
@@ -67,12 +68,53 @@ const uncode = (cmmd) => {
                 comando.mover.z = step[2];
             }
             break;
+        case 'INTERPOLAR_ABS':
+                if (param == "INICIO") {
+                    comando = { 'interpolar': "INICIO" };
+                } else if (param == "FIM") {
+                    comando = { 'interpolar': "FIM" };
+                } else {
+                    let step = [];
+                    index = param.indexOf(",");
+                    step[0] = param.slice(0,index);
+                    param = param.slice(index +1 );
+                    index = param.indexOf(",");
+                    step[1] = param.slice(0,index);
+                    step[2] = param.slice(index + 1);
+    
+                    for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
+                   
+                    comando = { 'interpolar_abs': {"x": step[0], "y":step[1], "z":step[2]}};                    
+                }
+            break;    
+        case 'INTERPOLAR':
+                if (param == "INICIO") {
+                    comando = { 'interpolar': "INICIO" };
+                } else if (param == "FIM") {
+                    comando = { 'interpolar': "FIM" };
+                } else {
+                    let step = [];
+                    index = param.indexOf(",");
+                    step[0] = param.slice(0,index);
+                    param = param.slice(index +1 );
+                    index = param.indexOf(",");
+                    step[1] = param.slice(0,index);
+                    step[2] = param.slice(index + 1);
+    
+                    for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
+               
+                    comando = { 'interpolar': {"x": "none", "y":"none", "z":"none"}};
+                    comando.interpolar.x = step[0];
+                    comando.interpolar.y = step[1];
+                    comando.interpolar.z = step[2];                 
+                }
+            break;
         case 'MOVER_ABS':
                 if (param == "INICIO") {
                     comando = { 'mover_abs': "INICIO" };
                 } else if (param == "FIM") {
                     comando = {'mover_abs': "FIM" };
-                }else{
+                } else {
                     let step = [];
                     index = param.indexOf(",");
                     step[0] = param.slice(0,index);
@@ -218,7 +260,7 @@ export default function NewCommandModal() {
 
                     </div>
                     <div className="modal-c-body">
-                        {(command_select == 'MOVER' || command_select == 'MOVER_ABS') ?
+                        {(command_select == 'INTERPOLAR' || command_select == 'INTERPOLAR_ABS' || command_select == 'MOVER' || command_select == 'MOVER_ABS' ) ?
                             (
                                 <div>
                                     <div>
@@ -272,7 +314,7 @@ export default function NewCommandModal() {
 
                                             <div className="in-out">
                                                 <button className="btn-io" onClick = {() => { setParam(0)}} > 0 </button>
-                                                <button className="btn-io" onClick = {() => { setParam(1)}}> 1 </button>
+                                                <button className="btn-io" onClick = {() => { setParam(1)}} > 1 </button>
                                                 <button className="btn-io" onClick = {() => { setParam(2)}} > 2 </button>
                                                 <button className="btn-io" onClick = {() => { setParam(3)}} > 3 </button>
                                             </div>

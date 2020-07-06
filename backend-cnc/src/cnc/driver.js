@@ -299,6 +299,10 @@ function decode(CMDS) {
 
   for (k = 0; k < opcodes.length; k++) {
     switch (opcodes[k]) {
+      case 'interpolar':
+      break;
+      case 'interpolar_abs':
+      break;
       case 'mover':
         if (params[k] == "INICIO") {
           OPCODE2.push(GOHOMEop << 4);
@@ -362,7 +366,7 @@ function decode(CMDS) {
             OPCODE1.push(0x00);
           }
         }
-        break;
+      break;
 
       case 'mover_abs':
         let m = 0;
@@ -387,7 +391,7 @@ function decode(CMDS) {
           OPCODE2.push(RUNop << 4 | 1);
           OPCODE1.push(0x00);
         }
-        break;
+      break;
 
       case 'esperar':
         OPCODE2.push(DELAYop << 4 | ((params[k] & 0x0F00) >> 8));

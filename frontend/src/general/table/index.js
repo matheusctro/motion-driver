@@ -63,6 +63,32 @@ const decode = (cmmd) => {
     }
 
     switch (cmd) {
+        case 'interpolar_abs':
+            if (param == "INICIO") {
+                comando = 'INTERPOLAR_ABS(INICIO)';
+            } else if (param == "FIM") {
+                comando = 'INTERPOLAR_ABS(FIM)';
+            }else{
+                let step = [];
+                for (i in param) {
+                    step.push(param[i]);
+                }
+                comando = 'INTERPOLAR_ABS(' + step[0] + ',' + step[1] + ',' + step[2] + ')';
+            }
+            break;
+        case 'interpolar':
+            if (param == "INICIO") {
+                comando = 'INTERPOLAR(INICIO)';
+            } else if (param == "FIM") {
+                comando = 'INTERPOLAR(FIM)';
+            }else{
+                let step = [];
+                for (i in param) {
+                    step.push(param[i]);
+                }
+                comando = 'INTERPOLAR(' + step[0] + ',' + step[1] + ',' + step[2] + ')';
+            }
+            break;
         case 'mover':
             if (param == "INICIO") {
                 comando = 'MOVER(INICIO)';

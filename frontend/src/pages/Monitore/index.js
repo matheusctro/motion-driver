@@ -85,7 +85,7 @@ const Monitore = (props) => {
     }
 
     const handleRunMotion = async (e) => {
-
+        
         dispatch({ type: 'SET_LOOP_VALUE', loopValue: e.target.value });
 
         let motion_id
