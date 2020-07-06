@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Gains from '../models/gains';
 
 import { calibration, goHome, stop, run, setSize, readPosition, ack, axesFree , execute, updateGains } from '../cnc/driver';
-import {setAllow, readAllow} from '../comunications/serial/allow'
+import {setAllow, setAllowAck, readAllow} from '../comunications/serial/allow'
 
 function sleep(milliseconds) {
   const date = Date.now();
@@ -14,12 +14,21 @@ function sleep(milliseconds) {
 
 module.exports = {
   async run(req, res) {
+    // if(readAllow()){
+    //   setAllowAck(false);
+    //   sleep(1500);
+    //   console.log("eroor");
+    // }
+    setAllow(false);
     const runParam = req.query;
     let response;
+
+    io.emit('/ack', 1);
 
     let i = 0;
     for(i = 0; i < Number(runParam.repetition); i++){
       response = await run(Number(runParam.id));
+      console.log(response);
       if(i == 0){
         if (response)
         res.json({ "status": "ok" });
@@ -28,6 +37,8 @@ module.exports = {
       }
     }
 
+    setAllow(true);
+    io.emit('/ack', 0);
     return;
   },
 

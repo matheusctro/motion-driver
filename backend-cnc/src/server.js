@@ -18,7 +18,7 @@ import routes from './routes';
 import serial from './comunications/serial/serial';
 import {readPosition, ack} from './cnc/driver';
 //import {readPosition} from './cnc/driver';
-import {setAllow, readAllow} from './comunications/serial/allow';
+import {setAllow, readAllow, readAllowAck} from './comunications/serial/allow';
 
 // Mongo DB
 var mongoose = require('mongoose');
@@ -54,10 +54,14 @@ setInterval(async () => {
   }
 },300);
 
-setInterval(async ()=>{
+setInterval(async () => {
   let ackResponse;
-  ackResponse = await ack();
-  io.emit('/ack', ackResponse);
+  if (readAllow()) {
+    setAllow(false);
+    ackResponse = await ack();
+    setAllow(true);
+    io.emit('/ack', ackResponse);
+  }
 }, 1000);
 
 // taskkill /f /im node.exe

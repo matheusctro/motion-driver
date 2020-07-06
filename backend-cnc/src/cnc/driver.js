@@ -804,7 +804,7 @@ async function execute_cmd(OPCODE1, OPCODE2) {
   if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
     return true;
   } else {
-    console.log(`Erro: ${res}`);
+    //console.log(`Erro: ${res}`);
     return false;
   }
 }
@@ -887,6 +887,8 @@ async function run_cmd(MOTION) {
 
   const res = await waitResponse(70);
 
+  // console.log(res);
+
   if ((res[1] == RUNcmd) && (res[2] == 0xC0)) {
     return true;
   } else {
@@ -945,6 +947,11 @@ function waitResponse(time){
         clearInterval(interval);
         let response = queueResponse.peek();
         queueResponse.dequeue();
+
+        if ( response[2] != 0xC0) {
+          console.log(`Erro: ${response}`);
+        }
+
         resolve(response);
       }
       if(cont > 20 ){
@@ -999,10 +1006,15 @@ function waitResponseAck(time) {
 
 async function waitfinish(){
   let cont = 0;
+  let encoder;
   return new Promise((resolve) => {
     const interval = setInterval(async () => {
       let response;
       cont++;
+      
+      encoder = await readPosition();
+      io.emit('/encoder', encoder);
+      
       response  = await ack_cmd();
       if(response == 0){
         clearInterval(interval);
