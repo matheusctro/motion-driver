@@ -7,11 +7,13 @@
 .x {
     /* transform: rotate(45deg); */
     transform-origin: 0 30%;
+    /*color: red;*/
 }
 
 .y {
     transform: rotate(135deg);
     transform-origin: 0 25%;
+    
 }
 
 .z {
