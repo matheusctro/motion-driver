@@ -300,8 +300,71 @@ function decode(CMDS) {
   for (k = 0; k < opcodes.length; k++) {
     switch (opcodes[k]) {
       case 'interpolar':
+        if (params[k] == "INICIO") {
+          OPCODE2.push(GOHOMEop << 4);
+          OPCODE1.push(0x00);
+        } else if (params[k] == "FIM") {
+          OPCODE2.push(GOTOop << 4 | 0x0D);
+          OPCODE1.push(0x00);
+        } else {
+          let m = 0;
+          let step = [];
+          let dir;
+          for (m in params[k]) {
+            step.push(params[k][m]);
+          }
+
+          if (step[0] != 'none') {
+            if(step[0] > 0){
+              OPCODE2.push(DIRop << 4 | 0x01);
+              OPCODE1.push(0x00);
+            }else{
+              step[0] = -step[0];
+              OPCODE2.push(DIRop << 4 | 0x00);
+              OPCODE1.push(0x00);
+            }
+
+          }
+          if (step[1] != 'none') {
+            if(step[1] > 0){
+              OPCODE2.push(DIRop << 4 | 0x05);
+              OPCODE1.push(0x00);
+            }else{
+              step[1] = -step[1];
+              OPCODE2.push(DIRop << 4 | 0x04);
+              OPCODE1.push(0x00);
+            }
+          }
+          if (step[2] != 'none') {
+            if(step[2] > 0){
+              OPCODE2.push(DIRop << 4 | 0x09);
+              OPCODE1.push(0x00);
+            }else{
+              step[2] = -step[2];
+              OPCODE2.push(DIRop << 4 | 0x08);
+              OPCODE1.push(0x00);
+            }
+          }
+          if (step[0] != 'none') {
+            OPCODE2.push(MMop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
+            OPCODE1.push(step[0] & 0xFF);
+          }
+          if (step[1] != 'none') {
+            OPCODE2.push(MMop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
+            OPCODE1.push(step[1] & 0xFF);
+          }
+          if (step[2] != 'none') {
+            OPCODE2.push(MMop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
+            OPCODE1.push(step[2] & 0xFF);
+          }
+          if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+            OPCODE2.push(RUNop << 4 | 2);
+            OPCODE1.push(0x00);
+          }
+        }
       break;
       case 'interpolar_abs':
+
       break;
       case 'mover':
         if (params[k] == "INICIO") {
@@ -958,7 +1021,8 @@ function waitResponse(time){
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 200);
+   // }, 200);
+  }, 10);
   // }, time);
   });
 }
@@ -978,7 +1042,8 @@ function waitResponseEncoder(time) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 200);
+    //}, 200);
+  }, 10);
   // }, time);
   });
 }
@@ -999,7 +1064,8 @@ function waitResponseAck(time) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 200);
+//  }, 200);
+}, 10);
   // }, time);
   });
 }
@@ -1013,7 +1079,8 @@ async function waitfinish(){
       cont++;
       
       encoder = await readPosition();
-      io.emit('/encoder', encoder);
+      //io.emit('/encoder', encoder);
+      
       
       response  = await ack_cmd();
       if(response == 0){
@@ -1024,7 +1091,8 @@ async function waitfinish(){
         clearInterval(interval);
         resolve(false);
       }
-    }, 500);
+   // }, 500);
+  }, 10);
   });
 }
 
