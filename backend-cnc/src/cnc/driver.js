@@ -364,7 +364,28 @@ function decode(CMDS) {
         }
       break;
       case 'interpolar_abs':
+        let m = 0;
+        let step = [];
+        for (m in params[k]) {
+          step.push(params[k][m]);
+        }
 
+        if (step[0] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
+          OPCODE1.push(step[0] & 0xFF);
+        }
+        if (step[1] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
+          OPCODE1.push(step[1] & 0xFF);
+        }
+        if (step[2] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
+          OPCODE1.push(step[2] & 0xFF);
+        }
+        if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+          OPCODE2.push(RUNop << 4 | 2);
+          OPCODE1.push(0x00);
+        }
       break;
       case 'mover':
         if (params[k] == "INICIO") {
