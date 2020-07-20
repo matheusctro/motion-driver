@@ -453,25 +453,25 @@ function decode(CMDS) {
       break;
 
       case 'mover_abs':
-        let m = 0;
-        let step = [];
-        for (m in params[k]) {
-          step.push(params[k][m]);
+        let n = 0;
+        let step_m = [];
+        for (n in params[k]) {
+          step_m.push(params[k][n]);
         }
 
-        if (step[0] != 'none') {
-          OPCODE2.push(MM_ABSop << 4 | (0x00 | (step[0] & 0x0300) >> 8));
-          OPCODE1.push(step[0] & 0xFF);
+        if (step_m[0] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x00 | (step_m[0] & 0x0300) >> 8));
+          OPCODE1.push(step_m[0] & 0xFF);
         }
-        if (step[1] != 'none') {
-          OPCODE2.push(MM_ABSop << 4 | (0x04 | (step[1] & 0x0300) >> 8));
-          OPCODE1.push(step[1] & 0xFF);
+        if (step_m[1] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x04 | (step_m[1] & 0x0300) >> 8));
+          OPCODE1.push(step_m[1] & 0xFF);
         }
-        if (step[2] != 'none') {
-          OPCODE2.push(MM_ABSop << 4 | (0x08 | (step[2] & 0x0300) >> 8));
-          OPCODE1.push(step[2] & 0xFF);
+        if (step_m[2] != 'none') {
+          OPCODE2.push(MM_ABSop << 4 | (0x08 | (step_m[2] & 0x0300) >> 8));
+          OPCODE1.push(step_m[2] & 0xFF);
         }
-        if ((step[0] != 'none') | (step[1] != 'none') | (step[2] != 'none')) {
+        if ((step_m[0] != 'none') | (step_m[1] != 'none') | (step_m[2] != 'none')) {
           OPCODE2.push(RUNop << 4 | 1);
           OPCODE1.push(0x00);
         }
