@@ -733,7 +733,6 @@ function uncode(CMDS, MOTION) {
                 }
 
                 if(end){
-
                   programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
                   programa.cmmds[len].mover_abs.x = MM_ABS[0];
                   programa.cmmds[len].mover_abs.y = MM_ABS[1];
@@ -789,7 +788,6 @@ function uncode(CMDS, MOTION) {
           flagGOMM = false;
         }
 
-
         if (!flagGOMM) {
           switch (motor) {
             case 0:  // motor x
@@ -799,9 +797,6 @@ function uncode(CMDS, MOTION) {
               if ((((op_2 >> 4) & 0x0F) == GOMMop) && (motor == 1)) { //motor y
                 steps = Number(((op_2 & 0x03) << 8) | op_1);
                 GOMM[motor] = steps;
-
-
-
                 op_2 = CMDS[i + 2][0];
                 op_1 = CMDS[i + 2][1];
                 motor = Number((op_2 >> 2) & 0x03);
@@ -1042,9 +1037,7 @@ function waitResponse(time){
         clearInterval(interval);
         resolve([0x00]);
       }
-   // }, 200);
-  }, 10);
-  // }, time);
+    }, 200);
   });
 }
 
@@ -1063,9 +1056,7 @@ function waitResponseEncoder(time) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    //}, 200);
-  }, 10);
-  // }, time);
+    }, 200);
   });
 }
 
@@ -1085,9 +1076,7 @@ function waitResponseAck(time) {
         clearInterval(interval);
         resolve([0x00]);
       }
-//  }, 200);
-}, 10);
-  // }, time);
+    }, 200);
   });
 }
 
@@ -1098,11 +1087,10 @@ async function waitfinish(){
     const interval = setInterval(async () => {
       let response;
       cont++;
-      
+
       encoder = await readPosition();
-      //io.emit('/encoder', encoder);
-      
-      
+      io.emit('/encoder', encoder);
+
       response  = await ack_cmd();
       if(response == 0){
         clearInterval(interval);
@@ -1112,8 +1100,7 @@ async function waitfinish(){
         clearInterval(interval);
         resolve(false);
       }
-   // }, 500);
-  }, 10);
+  }, 500);
   });
 }
 

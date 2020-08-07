@@ -52,16 +52,16 @@ setInterval(async () => {
     setAllow(true);
     io.emit('/encoder', encoder);
   }
-},300);
+},400);
 
-setInterval(async () => {
-  let ackResponse;
-  if (readAllow()) {
-    setAllow(false);
-    ackResponse = await ack();
-    setAllow(true);
-    io.emit('/ack', ackResponse);
-  }
-}, 1000);
+// setInterval(async () => {
+//   let ackResponse;
+//   if (readAllow()) {
+//     setAllow(false);
+//     ackResponse = await ack();
+//     setAllow(true);
+//     io.emit('/ack', ackResponse);
+//   }
+// }, 1000);
 
 // taskkill /f /im node.exe
