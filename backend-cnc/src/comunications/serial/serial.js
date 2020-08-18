@@ -59,11 +59,12 @@ async function serial() {
           for (i; i < 6; i++) arr[i] = data[i];
           if (arr[1] == 0xAA) {
             queueResponseEncoder.enqueue(arr);
+            // console.log(`Recebido: [${arr}]`);
           } else  if (arr[1] == 0xA9) {
             queueResponseAck.enqueue(arr);
             // console.log(`Recebido: [${arr}]`);
           }else{
-            // console.log(`Recebido: [${arr}]`);
+            console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
           }
         }
@@ -92,8 +93,8 @@ async function serial() {
       if (!queueComand.isEmpty()) {
         let sendData = queueComand.peek();
 
-        //if (sendData[1]!= 0xA9 && sendData[1]!= 0xAA)  console.log(`Enviado: [${sendData}]`);
-
+        if (sendData[1]!= 0xA9 && sendData[1]!= 0xAA)  console.log(`Enviado: [${sendData}]`);
+        // console.log(`Enviado: [${sendData}]`);
         port.write([sendData[0]]);
         port.write([sendData[1]]);
         port.write([sendData[2]]);

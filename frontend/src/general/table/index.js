@@ -127,6 +127,13 @@ const decode = (cmmd) => {
         case 'esperar':
             comando = 'ESPERAR(' + param + ')';
             break;
+        case 'velocidade':
+            let vel = [];
+            for (i in param) {
+                vel.push(param[i]);
+            }
+            comando = 'VELOCIDADE(' + vel[0] + ',' + vel[1] + ',' + vel[2] + ')';
+            break;
     }
 
     return comando;
@@ -145,6 +152,7 @@ export default function ProgramTable () {
 
     commands.map(cmmd => {
         rows.push(createData(rows.length + 1, decode(cmmd)));
+        console.log(cmmd);
     });
 
     const handleExecuteCommand = async(linha) => {

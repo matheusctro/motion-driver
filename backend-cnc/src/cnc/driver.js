@@ -20,6 +20,7 @@ const WAITFORop = 0x7;
 const STEPop = 0x8;
 const GOMMop = 0x9;
 const GOSTEPop = 0xA;
+const SETop = 0xB;
 const DELAYop = 0xC;
 const MMop = 0xD;
 const MM_ABSop = 0xE;
@@ -501,6 +502,30 @@ function decode(CMDS) {
         OPCODE2.push(WAITFORop << 4 | ((para[0] & 0x07) << 1 | level));
         OPCODE1.push(0x00);
         break;
+
+      case 'velocidade':
+        let i = 0;
+        let vel = [];
+        for (i in params[k]) {
+          vel.push(params[k][i]);
+        }
+
+        if (vel[0] != 'none') {
+          OPCODE2.push(SETop << 4 | (0x00 | (vel[0] & 0x0300) >> 8));
+          OPCODE1.push(vel[0] & 0xFF);
+        }
+
+        if (vel[1] != 'none') {
+          OPCODE2.push(SETop << 4 | (0x04 | (vel[0] & 0x0300) >> 8));
+          OPCODE1.push(vel[0] & 0xFF);
+        }
+
+        if (vel[2] != 'none') {
+          OPCODE2.push(SETop << 4 | (0x08 | (vel[0] & 0x0300) >> 8));
+          OPCODE1.push(vel[0] & 0xFF);
+        }
+        break;
+
       default:
         OPCODE2.push(0x00);
         OPCODE1.push(0x00);
@@ -508,6 +533,8 @@ function decode(CMDS) {
   }
   OPCODE2.push(0x00);
   OPCODE1.push(0x00);
+  // console.log(OPCODE2);
+  // console.log(OPCODE1);
   return [OPCODE2, OPCODE1];
 }
 
@@ -536,6 +563,11 @@ function uncode(CMDS, MOTION) {
   let flagMM = false;
   let contMM = 0;
   let valueMM = 0;
+
+  let SET = [0, 0, 0];
+  let flagSET = false;
+  let contSET = 0;
+  let valueSET = 0;
 
   let i = 0;
   for (i = 0; i < CMDS.length; i++) {
@@ -686,7 +718,7 @@ function uncode(CMDS, MOTION) {
         }
         break;
 
-        case MM_ABSop:
+      case MM_ABSop:
           motor = Number((op_2 >> 2) & 0x03);
           steps = Number(((op_2 & 0x03) << 8) | op_1);
           MM_ABS = ['none', 'none', 'none'];
@@ -851,6 +883,86 @@ function uncode(CMDS, MOTION) {
           }
         }
         break;
+
+      case SETop:
+        let vel = 0;
+        motor = Number((op_2 >> 2) & 0x03);
+        vel = Number(((op_2 & 0x03) << 8) | op_1);
+
+        SET = ['none', 'none', 'none'];
+        SET[motor] = vel;
+        len = programa.cmmds.length;
+
+        contSET ++;
+        if((contSET > valueSET ) && flagSET ){
+          flagSET = false;
+        }
+
+        if (!flagSET) {
+          switch (motor) {
+            case 0:  // motor x
+              op_2 = CMDS[i + 1][0];
+              op_1 = CMDS[i + 1][1];
+              motor = Number((op_2 >> 2) & 0x03);
+
+              if ((((op_2 >> 4) & 0x0F) == SETop) && (motor == 1)) { //motor y
+                vel = Number(((op_2 & 0x03) << 8) | op_1);
+                SET[motor] = vel;
+
+                op_2 = CMDS[i + 2][0];
+                op_1 = CMDS[i + 2][1];
+                motor = Number((op_2 >> 2) & 0x03);
+                if ((((op_2 >> 4) & 0x0F) == SETop) && (motor == 2)) { //motor z
+                  vel = Number(((op_2 & 0x03) << 8) | op_1);
+                  SET[motor] = vel;
+
+                  flagSET = true;
+                  valueSET = 2;
+                  contSET = 0;
+                }else{
+                  flagSET = true;
+                  valueSET = 1;
+                  contSET = 0;
+                }
+              } else if ((((op_2 >> 4) & 0x0F) == SETop) && (motor == 2)) { //motor z
+                vel = Number(((op_2 & 0x03) << 8) | op_1);
+                SET[motor] = vel;
+
+                flagSET = true;
+                valueSET = 1;
+                contSET = 0;
+              }
+
+              programa.cmmds.push({ 'velocidade': { "x": "none", "y": "none", "z": "none" } });
+              programa.cmmds[len].velocidade.x = SET[0];
+              programa.cmmds[len].velocidade.y = SET[1];
+              programa.cmmds[len].velocidade.z = SET[2];
+              break;
+
+            case 1: // motor y
+              op_2 = CMDS[i + 1][0];
+              op_1 = CMDS[i + 1][1];
+              motor = Number((op_2 >> 2) & 0x03);
+              if ((((op_2 >> 4) & 0x0F) == SETop) && (motor == 2)) { //motor z
+                vel = Number(((op_2 & 0x03) << 8) | op_1);
+                SET[motor] = vel;
+                programa.cmmds.push({ 'velocidade': { "x": "none", "y": "none", "z": "none" } });
+                programa.cmmds[len].velocidade.y = SET[1];
+                programa.cmmds[len].velocidade.z = SET[2];
+
+                flagSET = true;
+                contSET = 0;
+                valueSET = 1;
+              }
+              break;
+
+          case 2: // motor z
+            programa.cmmds.push({ 'velocidade': { "x": "none", "y": "none", "z": "none" } });
+            programa.cmmds[len].velocidade.z = SET[2];
+            break;
+          }
+        }
+      break;
     }
   }
 
@@ -883,7 +995,7 @@ async function execute_cmd(OPCODE1, OPCODE2) {
   if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
     return true;
   } else {
-    //console.log(`Erro: ${res}`);
+    console.log(`Erro: ${res}`);
     return false;
   }
 }
@@ -1017,6 +1129,7 @@ async function axesFree_cmd(mode) {
   }
 }
 
+// Functions wait
 function waitResponse(time){
   let cont = 0;
   return new Promise((resolve) => {
@@ -1037,7 +1150,7 @@ function waitResponse(time){
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, 200);
+    }, 300);
   });
 }
 
@@ -1052,14 +1165,13 @@ function waitResponseEncoder(time) {
         queueResponseEncoder.dequeue();
         resolve(response);
       }
-      if(cont > 10 ){
+      if(cont > 0 ){
         clearInterval(interval);
         resolve([0x00]);
       }
     }, 200);
   });
 }
-
 
 function waitResponseAck(time) {
   let cont = 0;
@@ -1072,7 +1184,7 @@ function waitResponseAck(time) {
         queueResponseAck.dequeue();
         resolve(response);
       }
-      if(cont > 10 ){
+      if(cont > 0 ){
         clearInterval(interval);
         resolve([0x00]);
       }

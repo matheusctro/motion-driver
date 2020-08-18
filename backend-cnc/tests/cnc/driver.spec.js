@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
 import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
+import queueResponseAck from '../../src/Queue/queueResponseAck';
 import {calibration, goHome, step, stop, run, setSize, write, read, clearMotion, readPosition, ack, axesFree, execute, updateGains} from '../../src/cnc/driver';
 
 describe('Drive', () => {
@@ -294,9 +295,6 @@ describe('Drive', () => {
   describe('Write', ()=>{
     let CS;
     let arr;
-    CS = (0x00 -(0x3E + 0xA2 +  0xC0 + 0x00 + 0x0A))&0xFF;
-    arr = [0x3E, 0xA2 , 0xC0, 0x00, 0x0A, CS];
-
     let programa = {
       id: 10,
       qtd_cmmds: 6,
@@ -306,12 +304,36 @@ describe('Drive', () => {
                   {"esperar": 200},
                   {"acionar": 2},
                   {"confirma": {"in": 1, "nivel": "alto"}},
-                  {"desacionar": 2}]
+                  {"desacionar": 2},
+                  {"velocidade": {x: 20, y: 20, z: 20}}
+                ]
     };
 
     beforeEach(() => {
-      queueComand.clear();
       queueResponse.clear();
+      queueComand.clear();
+      queueResponseEncoder.clear();
+      queueResponseAck.clear();
+
+      CS = (0x00 -(0x3E + 0xA2 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA2 , 0xC0, 0x00, 0x0A, CS];
+      queueResponse.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xA9 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA9 , 0xC0, 0x00, 0x0A, CS];
+      queueResponseAck.enqueue(arr);
 
       CS = (0x00 -(0x3E + 0xA1 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA1 , 0xC0, 0x00, 0x0A, CS];
@@ -320,7 +342,7 @@ describe('Drive', () => {
       CS = (0x00 -(0x3E + 0xA4 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA4 , 0xC0, 0x00, 0x0A, CS];
       var i;
-      for (i = 0; i < 17; i++) {
+      for (i = 0; i < 20; i++) {
         queueResponse.enqueue(arr);
       }
 
@@ -329,24 +351,44 @@ describe('Drive', () => {
       queueResponse.enqueue(arr);
     });
 
+    it('shold return true', async () => {
+      let res = await write(programa);
+      expect(res).to.be.equal(true);
+    });
+
     it('shold put comnds on list `queueComand`', async () => {
       let res = await write(programa);
       expect(queueComand.isEmpty()).to.be.equal(false);
     });
 
-    it('shold put 19 comnds on list `queueComand`', async () => {
+    it('shold put 27 comnds on list `queueComand`', async () => {
       let res = await write(programa);
-      expect(queueComand.size()).to.be.equal(19);
+      expect(queueComand.size()).to.be.equal(27);
     });
 
-    it('shold put comnd LOAD/WRITE/UPDATE on list `queueComand`', async () => {
+    it('shold put comnd EXECUTE/READ_ENCODER/ACK/LOAD/WRITE/UPDATE on list `queueComand`', async () => {
       let res = await write(programa);
       let CMD = queueComand.peek();
-      expect(CMD[1]).to.be.equal(0xA1);
+      expect(CMD[1]).to.be.equal(0xA2);
       queueComand.dequeue();
 
       var i = 0;
-      for (i = 0; i < 17; i++) {
+      for (i = 0; i < 3; i++) {
+        CMD = queueComand.peek();
+        expect(CMD[1]).to.be.equal(0xAA);
+        queueComand.dequeue();
+      }
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA9);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA1);
+      queueComand.dequeue();
+
+      i = 0;
+      for (i = 0; i < 20; i++) {
         CMD = queueComand.peek();
         expect(CMD[1]).to.be.equal(0xA4);
         queueComand.dequeue();
@@ -523,6 +565,38 @@ describe('Drive', () => {
       arr = [0x3E, 0xA6 , 0xC0, 52, 0x00, CS];
       queueResponse.enqueue(arr);
 
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB0 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB0, 0x14, CS];
+      queueResponse.enqueue(arr); // SET Velocity x
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB4 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB4, 0x14, CS];
+      queueResponse.enqueue(arr); // SET Velocity y
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB8 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB8, 0x14, CS];
+      queueResponse.enqueue(arr);  // SET Velocity z
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB0 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB0, 0x14, CS];
+      queueResponse.enqueue(arr); // SET Velocity x
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB8 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB8, 0x14, CS];
+      queueResponse.enqueue(arr);  // SET Velocity z
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB4 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB4, 0x14, CS];
+      queueResponse.enqueue(arr); // SET Velocity y
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB8 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB8, 0x14, CS];
+      queueResponse.enqueue(arr);  // SET Velocity z
+
+      CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0xB8 + 0x14))&0xFF;
+      arr = [0x3E, 0xA6 , 0xC0, 0xB8, 0x14, CS];
+      queueResponse.enqueue(arr);  // SET Velocity z
+
       CS = (0x00 -(0x3E + 0xA6 +  0xC0 + 0x00 + 0x00))&0xFF;
       arr = [0x3E, 0xA6 , 0xC0, 0x00, 0x00, CS];
       queueResponse.enqueue(arr);
@@ -537,7 +611,7 @@ describe('Drive', () => {
       let prog = {
         id: 10,
         "name":"Programa 10",
-        qtd_cmmds: 13,
+        qtd_cmmds: 17,
         cmmds: [{ "mover": "INICIO" },
         { "mover_abs": { x: 300, y: 2, z: 1 } },
         { "mover_abs": { x: 'none', y: 2, z: 1 } },
@@ -550,10 +624,12 @@ describe('Drive', () => {
         { "esperar": 200 },
         { "acionar": 2 },
         { "confirma": {'in': 1, 'nivel': 'alto'}},
-        { "desacionar": 2 }]
+        { "desacionar": 2 },
+        { "velocidade": { x: 20, y: 20, z: 20 } },
+        { "velocidade": { x: 20, y: "none", z: 20 } },
+        { "velocidade": { x: "none", y: 20, z: 20 } },
+        { "velocidade": { x: "none", y: "none", z: 20 }}]
       };
-
-       // { "confirma": {"in": 1, "nivel": "alto"}},
 
       let res = await read(10);
 
@@ -625,22 +701,30 @@ describe('Drive', () => {
     let motion = 10;
 
     beforeEach(() => {
+      queueResponse.clear();
       queueComand.clear();
+      queueResponseEncoder.clear();
+      queueResponseAck.clear();
 
       CS = (0x00 -(0x3E + 0xA7 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA7 , 0xC0, 0x00, 0x0A, CS];
       queueResponse.enqueue(arr);
 
-    });
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
 
-    it('shold put comnds on list `queueComand`', async () => {
-      let res = await run(motion);
-      expect(queueComand.isEmpty()).to.be.equal(false);
-    });
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
 
-    it('shold put 1 comnds on list `queueComand`', async () => {
-      let res = await run(motion);
-      expect(queueComand.size()).to.be.equal(1);
+      CS = (0x00 -(0x3E + 0xAA +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xAA , 0xC0, 0x00, 0x0A, CS];
+      queueResponseEncoder.enqueue(arr);
+
+      CS = (0x00 -(0x3E + 0xA9 +  0xC0 + 0x00 + 0x0A))&0xFF;
+      arr = [0x3E, 0xA9 , 0xC0, 0x00, 0x0A, CS];
+      queueResponseAck.enqueue(arr);
     });
 
     it('shold return true', async () => {
@@ -648,11 +732,37 @@ describe('Drive', () => {
       expect(res).to.be.equal(true);
     });
 
+    it('shold put comnds on list `queueComand`', async () => {
+      let res = await run(motion);
+      expect(queueComand.isEmpty()).to.be.equal(false);
+    });
+
+    it('shold put 5 comnds on list `queueComand`', async () => {
+      let res = await run(motion);
+      expect(queueComand.size()).to.be.equal(5);
+    });
+
     it('shold put comand RUN on list `queueComand`', async () => {
       let res = await run(motion);
 
       let CMD = queueComand.peek();
       expect(CMD[1]).to.be.equal(0xA7);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xAA);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xAA);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xAA);
+      queueComand.dequeue();
+
+      CMD = queueComand.peek();
+      expect(CMD[1]).to.be.equal(0xA9);
       queueComand.dequeue();
     });
   });
@@ -758,10 +868,11 @@ describe('Drive', () => {
 
     beforeEach(() => {
       queueComand.clear();
+      queueResponseAck.clear();
 
-      CS = (0x00 -(0x3E + 0xA9 +  0xC0 + 0x0A))&0xFF;
+      CS = (0x00 -(0x3E + 0xA9 +  0xC0 + 0x00 + 0x0A))&0xFF;
       arr = [0x3E, 0xA9 , 0xC0, 0x00, 0x0A, CS];
-      queueResponse.enqueue(arr);
+      queueResponseAck.enqueue(arr);
     });
 
     it('shold put comnds on list `queueComand`', async () => {
@@ -885,7 +996,7 @@ describe('Drive', () => {
       arr = [0x3E, 0xA5 , 0xC0, 0x00, 0x0A, CS];
       queueResponse.enqueue(arr);
 
-      
+
     });
 
     it('shold put comands on list `queueComand`', async () => {

@@ -195,6 +195,16 @@
     color: #222;
 }
 
+.vel{
+    display: flex;
+  
+    text-align: center;
+    align-content: center;
+    padding: 15px 0px 15px 0px; 
+    font: 400 18px Roboto, sans-serif;
+    color: #222;
+}
+
 .input-time{
     font: 400 18px Roboto, sans-serif;
     color: #222;

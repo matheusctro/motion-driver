@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const commandsTypes = ['MOVER', 'MOVER_ABS', 'ACIONAR', 'DESACIONAR', 'CONFIRMA', 'ESPERAR', 'INTERPOLAR', 'INTERPOLAR_ABS'];
+const commandsTypes = ['MOVER', 'MOVER_ABS', 'ACIONAR', 'DESACIONAR', 'CONFIRMA', 'ESPERAR', 'INTERPOLAR', 'INTERPOLAR_ABS', 'VELOCIDADE'];
 
 const uncode = (cmmd) => {
 
@@ -42,8 +42,8 @@ const uncode = (cmmd) => {
 
     var index = cmmd.indexOf("(");
     cmd = cmmd.slice(0, index);
-    param =  cmmd.slice(index+1, cmmd.length-1);
-    
+    param = cmmd.slice(index + 1, cmmd.length - 1);
+
     let i;
     switch (cmd) {
         case 'MOVER':
@@ -54,79 +54,79 @@ const uncode = (cmmd) => {
             } else {
                 let step = [];
                 index = param.indexOf(",");
-                step[0] = param.slice(0,index);
-                param = param.slice(index +1 );
+                step[0] = param.slice(0, index);
+                param = param.slice(index + 1);
                 index = param.indexOf(",");
-                step[1] = param.slice(0,index);
+                step[1] = param.slice(0, index);
                 step[2] = param.slice(index + 1);
 
-                for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
-               
-                comando = { 'mover': {"x": "none", "y":"none", "z":"none"}};
+                for (i = 0; i < 3; i++) step[i] = (step[i] != "none") ? Number(step[i]) : step[i];
+
+                comando = { 'mover': { "x": "none", "y": "none", "z": "none" } };
                 comando.mover.x = step[0];
                 comando.mover.y = step[1];
                 comando.mover.z = step[2];
             }
             break;
         case 'INTERPOLAR_ABS':
-                if (param == "INICIO") {
-                    comando = { 'interpolar': "INICIO" };
-                } else if (param == "FIM") {
-                    comando = { 'interpolar': "FIM" };
-                } else {
-                    let step = [];
-                    index = param.indexOf(",");
-                    step[0] = param.slice(0,index);
-                    param = param.slice(index +1 );
-                    index = param.indexOf(",");
-                    step[1] = param.slice(0,index);
-                    step[2] = param.slice(index + 1);
-    
-                    for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
-                   
-                    comando = { 'interpolar_abs': {"x": step[0], "y":step[1], "z":step[2]}};                    
-                }
-            break;    
+            if (param == "INICIO") {
+                comando = { 'interpolar': "INICIO" };
+            } else if (param == "FIM") {
+                comando = { 'interpolar': "FIM" };
+            } else {
+                let step = [];
+                index = param.indexOf(",");
+                step[0] = param.slice(0, index);
+                param = param.slice(index + 1);
+                index = param.indexOf(",");
+                step[1] = param.slice(0, index);
+                step[2] = param.slice(index + 1);
+
+                for (i = 0; i < 3; i++) step[i] = (step[i] != "none") ? Number(step[i]) : step[i];
+
+                comando = { 'interpolar_abs': { "x": step[0], "y": step[1], "z": step[2] } };
+            }
+            break;
         case 'INTERPOLAR':
-                if (param == "INICIO") {
-                    comando = { 'interpolar': "INICIO" };
-                } else if (param == "FIM") {
-                    comando = { 'interpolar': "FIM" };
-                } else {
-                    let step = [];
-                    index = param.indexOf(",");
-                    step[0] = param.slice(0,index);
-                    param = param.slice(index +1 );
-                    index = param.indexOf(",");
-                    step[1] = param.slice(0,index);
-                    step[2] = param.slice(index + 1);
-    
-                    for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
-               
-                    comando = { 'interpolar': {"x": "none", "y":"none", "z":"none"}};
-                    comando.interpolar.x = step[0];
-                    comando.interpolar.y = step[1];
-                    comando.interpolar.z = step[2];                 
-                }
+            if (param == "INICIO") {
+                comando = { 'interpolar': "INICIO" };
+            } else if (param == "FIM") {
+                comando = { 'interpolar': "FIM" };
+            } else {
+                let step = [];
+                index = param.indexOf(",");
+                step[0] = param.slice(0, index);
+                param = param.slice(index + 1);
+                index = param.indexOf(",");
+                step[1] = param.slice(0, index);
+                step[2] = param.slice(index + 1);
+
+                for (i = 0; i < 3; i++) step[i] = (step[i] != "none") ? Number(step[i]) : step[i];
+
+                comando = { 'interpolar': { "x": "none", "y": "none", "z": "none" } };
+                comando.interpolar.x = step[0];
+                comando.interpolar.y = step[1];
+                comando.interpolar.z = step[2];
+            }
             break;
         case 'MOVER_ABS':
-                if (param == "INICIO") {
-                    comando = { 'mover_abs': "INICIO" };
-                } else if (param == "FIM") {
-                    comando = {'mover_abs': "FIM" };
-                } else {
-                    let step = [];
-                    index = param.indexOf(",");
-                    step[0] = param.slice(0,index);
-                    param = param.slice(index +1 );
-                    index = param.indexOf(",");
-                    step[1] = param.slice(0,index);
-                    step[2] = param.slice(index + 1);
-    
-                    for(i = 0; i <3 ; i++) step[i] = (step[i] != "none")? Number(step[i]):step[i];
-                   
-                    comando = { 'mover_abs': {"x": step[0], "y":step[1], "z":step[2]}};
-                }
+            if (param == "INICIO") {
+                comando = { 'mover_abs': "INICIO" };
+            } else if (param == "FIM") {
+                comando = { 'mover_abs': "FIM" };
+            } else {
+                let step = [];
+                index = param.indexOf(",");
+                step[0] = param.slice(0, index);
+                param = param.slice(index + 1);
+                index = param.indexOf(",");
+                step[1] = param.slice(0, index);
+                step[2] = param.slice(index + 1);
+
+                for (i = 0; i < 3; i++) step[i] = (step[i] != "none") ? Number(step[i]) : step[i];
+
+                comando = { 'mover_abs': { "x": step[0], "y": step[1], "z": step[2] } };
+            }
             break;
         case 'ACIONAR':
             comando = { 'acionar': Number(param) };
@@ -135,16 +135,31 @@ const uncode = (cmmd) => {
             comando = { 'desacionar': Number(param) };
             break;
         case 'ESPERAR':
-            comando = {'esperar': Number(param) };
+            comando = { 'esperar': Number(param) };
             break;
         case 'CONFIRMA':
             let inn;
             let nivel;
 
             index = param.indexOf(",");
-            inn = Number(param.slice(0,index));
-            nivel = param.slice(index+1).toLowerCase();
-            comando =  { confirma: { 'in': inn, 'nivel': nivel } };
+            inn = Number(param.slice(0, index));
+            nivel = param.slice(index + 1).toLowerCase();
+            comando = { confirma: { 'in': inn, 'nivel': nivel } };
+            break;
+
+        case 'VELOCIDADE':
+            let vel = [];
+            index = param.indexOf(",");
+            vel[0] = param.slice(0, index);
+            param = param.slice(index + 1);
+            index = param.indexOf(",");
+            vel[1] = param.slice(0, index);
+            vel[2] = param.slice(index + 1);
+
+            for (i = 0; i < 3; i++) vel[i] = (vel[i] != "none") ? Number(vel[i]) : vel[i];
+
+            comando = { 'velocidade': { "x": vel[0], "y": vel[1], "z": vel[2] } };
+
             break;
     }
     return comando;
@@ -164,7 +179,7 @@ export default function NewCommandModal() {
 
     const handleCloseModal = () => {
         dispatch({ type: 'SET_OPEN_MODAL_COMMAND', openModalNewCommand: false });
-        dispatch({ type: 'SET_POSITION', pos: {"x": "none", "y":"none", "z":"none"} });
+        dispatch({ type: 'SET_POSITION', pos: { "x": "none", "y": "none", "z": "none" } });
         dispatch({ type: 'SET_PARAMS', params: '' });
     }
 
@@ -177,7 +192,7 @@ export default function NewCommandModal() {
         let comm = command_select + "(" + param + ")";
 
         dispatch({ type: 'SET_PARAMS', params: param });
-        dispatch({ type: 'SET_COMMAND', command: comm});
+        dispatch({ type: 'SET_COMMAND', command: comm });
     }
 
     const handle_x = (event) => {
@@ -190,45 +205,45 @@ export default function NewCommandModal() {
     const handle_y = (event) => {
         let position = pos;
         position.y = event.target.value;
-        
+
         dispatch({ type: 'SET_POSITION', pos: position });
     }
 
     const handle_z = (event) => {
         let position = pos;
         position.z = event.target.value;
-        
+
         dispatch({ type: 'SET_POSITION', pos: position });
     }
 
-    const handlePoint = () =>{
+    const handlePoint = () => {
         let param = pos.x + ',' + pos.y + ',' + pos.z;
         let comm = command_select + "(" + param + ")";
 
         dispatch({ type: 'SET_PARAMS', params: param });
-        dispatch({ type: 'SET_COMMAND', command: comm});
+        dispatch({ type: 'SET_COMMAND', command: comm });
     }
 
     const handle_time = (event) => {
         let comm = command_select + "(" + event.target.value + ")";
 
         dispatch({ type: 'SET_PARAMS', params: event.target.value });
-        dispatch({ type: 'SET_COMMAND', command: comm});
+        dispatch({ type: 'SET_COMMAND', command: comm });
     }
 
     const handleAddCommand = () => {
         dispatch({ type: 'SET_OPEN_MODAL_COMMAND', openModalNewCommand: false });
 
-        if(indexNewCommand == 0){
-            dispatch({type: 'COMMANDS', commands: [ ...commands, uncode(command)]});
-        }else{
+        if (indexNewCommand == 0) {
+            dispatch({ type: 'COMMANDS', commands: [...commands, uncode(command)] });
+        } else {
             let com = commands;
             com[indexNewCommand - 1] = uncode(command);
-            dispatch({type: 'COMMANDS', commands: []});
+            dispatch({ type: 'COMMANDS', commands: [] });
             dispatch({ type: 'COMMANDS', commands: com });
         }
 
-    } 
+    }
 
     return (
         <Modal
@@ -260,7 +275,7 @@ export default function NewCommandModal() {
 
                     </div>
                     <div className="modal-c-body">
-                        {(command_select == 'INTERPOLAR' || command_select == 'INTERPOLAR_ABS' || command_select == 'MOVER' || command_select == 'MOVER_ABS' ) ?
+                        {(command_select == 'INTERPOLAR' || command_select == 'INTERPOLAR_ABS' || command_select == 'MOVER' || command_select == 'MOVER_ABS') ?
                             (
                                 <div>
                                     <div>
@@ -268,20 +283,20 @@ export default function NewCommandModal() {
                                     </div>
                                     <div className="commands-container">
                                         <div>
-                                            <button className="btn-commands" onClick = {() => { setParam("INICIO")} }> INICIO </button>
-                                            <button className="btn-commands" onClick = {() => { setParam("FIM")}} > FIM </button>
+                                            <button className="btn-commands" onClick={() => { setParam("INICIO") }}> INICIO </button>
+                                            <button className="btn-commands" onClick={() => { setParam("FIM") }} > FIM </button>
                                         </div>
                                         <div className="point">
                                             <div>
-                                                <button className="btn-commands" onClick = {handlePoint}> PONTO </button>
+                                                <button className="btn-commands" onClick={handlePoint}> PONTO </button>
                                             </div>
                                             <div className="point-xyz">
                                                 <label>X:</label>
-                                                <input type="number" className="input-xyz" onChange = {handle_x}/>
+                                                <input type="number" className="input-xyz" onChange={handle_x} />
                                                 <label>Y:</label>
-                                                <input type="number" className="input-xyz" onChange = {handle_y}/>
+                                                <input type="number" className="input-xyz" onChange={handle_y} />
                                                 <label>Z:</label>
-                                                <input type="number" className="input-xyz" onChange = {handle_z}/>
+                                                <input type="number" className="input-xyz" onChange={handle_z} />
                                             </div>
                                         </div>
                                     </div>
@@ -297,7 +312,7 @@ export default function NewCommandModal() {
                                         </div>
 
                                         <div className="time">
-                                            <input type="number" className="input-time" onChange = {handle_time} min = '0'/>
+                                            <input type="number" className="input-time" onChange={handle_time} min='0' />
                                             <label> ms</label>
                                         </div>
 
@@ -313,10 +328,10 @@ export default function NewCommandModal() {
                                             </div>
 
                                             <div className="in-out">
-                                                <button className="btn-io" onClick = {() => { setParam(0)}} > 0 </button>
-                                                <button className="btn-io" onClick = {() => { setParam(1)}} > 1 </button>
-                                                <button className="btn-io" onClick = {() => { setParam(2)}} > 2 </button>
-                                                <button className="btn-io" onClick = {() => { setParam(3)}} > 3 </button>
+                                                <button className="btn-io" onClick={() => { setParam(0) }} > 0 </button>
+                                                <button className="btn-io" onClick={() => { setParam(1) }} > 1 </button>
+                                                <button className="btn-io" onClick={() => { setParam(2) }} > 2 </button>
+                                                <button className="btn-io" onClick={() => { setParam(3) }} > 3 </button>
                                             </div>
 
                                             <div className="command">
@@ -332,46 +347,77 @@ export default function NewCommandModal() {
                                                 </div>
 
                                                 <div className="in-out">
-                                                    <button className="btn-io"  onClick = {() => { setParam(0)}}> 0 </button>
-                                                    <button className="btn-io"  onClick = {() => { setParam(1)}}> 1 </button>
-                                                    <button className="btn-io"  onClick = {() => { setParam(2)}}> 2 </button>
-                                                    <button className="btn-io"  onClick = {() => { setParam(3)}}> 3 </button>
+                                                    <button className="btn-io" onClick={() => { setParam(0) }}> 0 </button>
+                                                    <button className="btn-io" onClick={() => { setParam(1) }}> 1 </button>
+                                                    <button className="btn-io" onClick={() => { setParam(2) }}> 2 </button>
+                                                    <button className="btn-io" onClick={() => { setParam(3) }}> 3 </button>
                                                 </div>
 
                                                 <div className="command">
                                                     {command_select + "(" + params + ")"}
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <div>
-                                                <div>
-                                                    <p> Escolha uma das entradas a ser confirmada: </p>
-                                                </div>
-                                                <div className="confirma">
-                                                    <div>
-                                                        <div className="label-confirma">
-                                                            <label> ON </label>
-                                                        </div>
-                                                        <div className="label-confirma">
-                                                            <label> OFF </label>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <button className="btn-io"  onClick = {() => { setParam('0,ALTO')}}> 0 </button>
-                                                        <button className="btn-io" onClick = {() => { setParam('1,ALTO')}}> 1 </button>
-                                                        <button className="btn-io" onClick = {() => { setParam('2,ALTO')}}> 2 </button>
-                                                        <button className="btn-io" onClick = {() => { setParam('3,ALTO')}}> 3 </button>
 
-                                                        <button className="btn-io-off" onClick = {() => { setParam('0,BAIXO')}}> 0  </button>
-                                                        <button className="btn-io-off" onClick = {() => { setParam('1,BAIXO')}}> 1 </button>
-                                                        <button className="btn-io-off" onClick = {() => { setParam('2,BAIXO')}}> 2 </button>
-                                                        <button className="btn-io-off" onClick = {() => { setParam('3,BAIXO')}}> 3 </button>
+                                        ) : ((command_select == 'VELOCIDADE') ?
+                                            (
+                                                <div>
+                                                    <div>
+                                                        <p> Escolha a velocidade fixa de cada eixo: </p>
+                                                    </div>
+
+                                                    <div className="commands-container">
+                                            
+                                                        <div className="vel">
+                                                            <div>
+                                                                <button className="btn-commands" onClick={handlePoint}> Velocidade </button>
+                                                            </div>
+                                                            <div className="point-xyz">
+                                                                <label>X:</label>
+                                                                <input type="number" className="input-xyz" onChange={handle_x} />
+                                                                <label>Y:</label>
+                                                                <input type="number" className="input-xyz" onChange={handle_y} />
+                                                                <label>Z:</label>
+                                                                <input type="number" className="input-xyz" onChange={handle_z} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="command">
+                                                        {command_select + "(" + params + ")"}
+                                                    </div>
+
+                                                </div>
+
+                                            ) : (
+                                                <div>
+                                                    <div>
+                                                        <p> Escolha uma das entradas a ser confirmada: </p>
+                                                    </div>
+                                                    <div className="confirma">
+                                                        <div>
+                                                            <div className="label-confirma">
+                                                                <label> ON </label>
+                                                            </div>
+                                                            <div className="label-confirma">
+                                                                <label> OFF </label>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <button className="btn-io" onClick={() => { setParam('0,ALTO') }}> 0 </button>
+                                                            <button className="btn-io" onClick={() => { setParam('1,ALTO') }}> 1 </button>
+                                                            <button className="btn-io" onClick={() => { setParam('2,ALTO') }}> 2 </button>
+                                                            <button className="btn-io" onClick={() => { setParam('3,ALTO') }}> 3 </button>
+
+                                                            <button className="btn-io-off" onClick={() => { setParam('0,BAIXO') }}> 0  </button>
+                                                            <button className="btn-io-off" onClick={() => { setParam('1,BAIXO') }}> 1 </button>
+                                                            <button className="btn-io-off" onClick={() => { setParam('2,BAIXO') }}> 2 </button>
+                                                            <button className="btn-io-off" onClick={() => { setParam('3,BAIXO') }}> 3 </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="command-confirma">
+                                                        {command_select + "(" + params + ")"}
                                                     </div>
                                                 </div>
-                                                <div className="command-confirma">
-                                                    {command_select + "(" + params + ")"}
-                                                </div>
-                                            </div>
+                                            )
                                         )
                                     )
                                 )
@@ -382,8 +428,8 @@ export default function NewCommandModal() {
                         <button className="btn-cancelar" onClick={handleCloseModal} > Cancelar </button>
                         <button className="btn-salvar" onClick={handleAddCommand} > Confirmar </button>
                     </div>
-                </div>
-            </Fade>
-        </Modal>
+                </div >
+            </Fade >
+        </Modal >
     )
 }
