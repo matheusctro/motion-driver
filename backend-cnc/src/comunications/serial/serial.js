@@ -3,7 +3,9 @@ import ByteLength from '@serialport/parser-byte-length';
 
 import queueComand from '../../Queue/queueComand';
 import queueResponse from '../../Queue/queueResponse';
-import queueResponseEncoder from '../../Queue/queueResponseEncoder';
+import queueResponseEncoderX from '../../Queue/queueResponseEncoderX';
+import queueResponseEncoderY from '../../Queue/queueResponseEncoderY';
+import queueResponseEncoderZ from '../../Queue/queueResponseEncoderZ';
 import queueResponseAck from '../../Queue/queueResponseAck';
 import findSerial from './findSerial';
 
@@ -55,16 +57,28 @@ async function serial() {
       let arr = [];
       if (data.length == 6) {
         if (data[0] == 0x3E) {
+          if(data[1] == 0x3E){
+            console.log("error 3e");
+          }
           let i = 0;
           for (i; i < 6; i++) arr[i] = data[i];
           if (arr[1] == 0xAA) {
-            queueResponseEncoder.enqueue(arr);
+            if (arr[2] == 0x00) {
+              queueResponseEncoderX.enqueue(arr);
+              // console.log(`X: [${Number((arr[3] << 8) | arr[4])}]`);
+            } else if(arr[2] == 0x01){
+              queueResponseEncoderY.enqueue(arr);
+              // console.log(`Y: [${Number((arr[3] << 8) | arr[4])}]`);
+            }else if(arr[2] == 0x02) {
+              queueResponseEncoderZ.enqueue(arr);
+              // console.log(`Z: [${Number((arr[3] << 8) | arr[4])}]`);
+            }
             // console.log(`Recebido: [${arr}]`);
           } else  if (arr[1] == 0xA9) {
             queueResponseAck.enqueue(arr);
             // console.log(`Recebido: [${arr}]`);
           }else{
-            console.log(`Recebido: [${arr}]`);
+            // console.log(`Recebido: [${arr}]`);
             queueResponse.enqueue(arr);
           }
         }
@@ -93,7 +107,7 @@ async function serial() {
       if (!queueComand.isEmpty()) {
         let sendData = queueComand.peek();
 
-        if (sendData[1]!= 0xA9 && sendData[1]!= 0xAA)  console.log(`Enviado: [${sendData}]`);
+        // if (sendData[1]!= 0xA9 && sendData[1]!= 0xAA)  console.log(`Enviado: [${sendData}]`);
         // console.log(`Enviado: [${sendData}]`);
         port.write([sendData[0]]);
         port.write([sendData[1]]);

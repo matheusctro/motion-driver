@@ -41,7 +41,9 @@ const PARAM_ki_z = 47;
 
 import queueComand from '../../src/Queue/queueComand';
 import queueResponse from '../../src/Queue/queueResponse';
-import queueResponseEncoder from '../../src/Queue/queueResponseEncoder';
+import queueResponseEncoderX from '../Queue/queueResponseEncoderX';
+import queueResponseEncoderY from '../Queue/queueResponseEncoderY';
+import queueResponseEncoderZ from '../Queue/queueResponseEncoderZ';
 import queueResponseAck from '../../src/Queue/queueResponseAck';
 import { listen } from 'socket.io';
 
@@ -176,9 +178,9 @@ async function clearMotion(MOTION) {
 async function  readPosition(){
   let pos = [];
 
-  pos[0] = await read_pos_cmd(0); // Motor x
-  pos[1] = await read_pos_cmd(1); // Motor y
-  pos[2] = await read_pos_cmd(2); // Motor z
+  pos[0] = await read_pos_x_cmd(); 
+  pos[1] = await read_pos_y_cmd(); 
+  pos[2] = await read_pos_z_cmd(); 
 
   return pos;
 }
@@ -365,6 +367,14 @@ function decode(CMDS) {
         }
       break;
       case 'interpolar_abs':
+        if (params[k] == "INICIO") {
+          OPCODE2.push(GOHOMEop << 4);
+          OPCODE1.push(0x00);
+        } else if (params[k] == "FIM") {
+          OPCODE2.push(GOTOop << 4 | 0x0D);
+          OPCODE1.push(0x00);
+        } else {
+
         let m = 0;
         let step = [];
         for (m in params[k]) {
@@ -387,6 +397,7 @@ function decode(CMDS) {
           OPCODE2.push(RUNop << 4 | 2);
           OPCODE1.push(0x00);
         }
+      }
       break;
       case 'mover':
         if (params[k] == "INICIO") {
@@ -454,6 +465,15 @@ function decode(CMDS) {
       break;
 
       case 'mover_abs':
+        if (params[k] == "INICIO") {
+          OPCODE2.push(GOHOMEop << 4);
+          OPCODE1.push(0x00);
+        } else if (params[k] == "FIM") {
+          OPCODE2.push(GOTOop << 4 | 0x0D);
+          OPCODE1.push(0x00);
+        } else {
+
+
         let n = 0;
         let step_m = [];
         for (n in params[k]) {
@@ -476,6 +496,7 @@ function decode(CMDS) {
           OPCODE2.push(RUNop << 4 | 1);
           OPCODE1.push(0x00);
         }
+      }
       break;
 
       case 'esperar':
@@ -579,6 +600,7 @@ function uncode(CMDS, MOTION) {
     let motor;
     let steps;
     let end = false;
+    let interpolar = false;
 
     switch (opcode) {
       case GOHOMEop:
@@ -664,22 +686,32 @@ function uncode(CMDS, MOTION) {
                     flagMM = true;
                     contMM = 0;
                     valueMM = 2;
+                    interpolar = ((CMDS[i + 3][0] & 0x02) == 0x02)? true : false;
                   }
                 }else if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
                   end = true;
                   flagMM = true;
                   contMM = 0;
                   valueMM = 1;
+                  interpolar = ((CMDS[i + 2][0] & 0x02) == 0x02)? true : false;
                 }
               }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
                 end = true;
+                interpolar = ((CMDS[i + 1][0] & 0x02) == 0x02)? true : false;
               }
 
               if(end){
-                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.cmmds[len].mover.x = DIR[0]*MM[0];
-                programa.cmmds[len].mover.y = MM[1];
-                programa.cmmds[len].mover.z = MM[2];
+                if(interpolar){
+                  programa.cmmds.push({ 'interporlar': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].interporlar.x = DIR[0]*MM[0];
+                  programa.cmmds[len].interporlar.y = MM[1];
+                  programa.cmmds[len].interporlar.z = MM[2];
+                }else{
+                  programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover.x = DIR[0]*MM[0];
+                  programa.cmmds[len].mover.y = MM[1];
+                  programa.cmmds[len].mover.z = MM[2];
+                }
               }
               break;
 
@@ -696,22 +728,35 @@ function uncode(CMDS, MOTION) {
                   flagMM = true;
                   contMM = 0;
                   valueMM = 1;
+                  interpolar = ((CMDS[i + 2][0] & 0x02) == 0x02)? true : false;
                 }
               }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
                 end = true;
+                interpolar = ((CMDS[i + 1][0] & 0x02) == 0x02)? true : false;
               }
 
               if(end){
-                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.cmmds[len].mover.y = DIR[1]*MM[1];
-                programa.cmmds[len].mover.z = MM[2];
+                if(interpolar){
+                  programa.cmmds.push({ 'interpolar': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].interpolar.y = DIR[1]*MM[1];
+                  programa.cmmds[len].interpolar.z = MM[2];
+                }else {
+                  programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover.y = DIR[1]*MM[1];
+                  programa.cmmds[len].mover.z = MM[2];
+                }
               }
               break;
 
             case 2: // motor z
               if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
-                programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
-                programa.cmmds[len].mover.z = DIR[2]*MM[2];
+                if((CMDS[i + 1][0] & 0x02) == 0x02){
+                  programa.cmmds.push({ 'interpolar': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].interpolar.z = DIR[2]*MM[2];
+                }else{
+                  programa.cmmds.push({ 'mover': { "x": "none", "y": "none", "z": "none" } });
+                  programa.cmmds[len].mover.z = DIR[2]*MM[2];
+                }
               }
               break;
           }
@@ -753,22 +798,32 @@ function uncode(CMDS, MOTION) {
                       flagMM_ABS = true;
                       contMM_ABS = 0;
                       valueMM_ABS = 2;
+                      interpolar = ((CMDS[i + 3][0] & 0x02) == 0x02)? true : false;
                     }
                   }else if(((CMDS[i + 2][0] >> 4) & 0x0F) == RUNop) {
                     end = true;
                     flagMM_ABS = true;
                     contMM_ABS = 0;
                     valueMM_ABS = 1;
+                    interpolar = ((CMDS[i + 2][0] & 0x02) == 0x02)? true : false;
                   }
                 }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
                   end = true;
+                  interpolar = ((CMDS[i + 1][0] & 0x02) == 0x02)? true : false;
                 }
 
                 if(end){
-                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
-                  programa.cmmds[len].mover_abs.x = MM_ABS[0];
-                  programa.cmmds[len].mover_abs.y = MM_ABS[1];
-                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  if(interpolar){
+                    programa.cmmds.push({ 'interpolar_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].interpolar_abs.x = MM_ABS[0];
+                    programa.cmmds[len].interpolar_abs.y = MM_ABS[1];
+                    programa.cmmds[len].interpolar_abs.z = MM_ABS[2];
+                  }else{
+                    programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].mover_abs.x = MM_ABS[0];
+                    programa.cmmds[len].mover_abs.y = MM_ABS[1];
+                    programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  }
                 }
                 break;
 
@@ -785,22 +840,35 @@ function uncode(CMDS, MOTION) {
                     flagMM_ABS = true;
                     contMM_ABS = 0;
                     valueMM_ABS = 1;
+                    interpolar = ((CMDS[i + 2][0] & 0x02) == 0x02)? true : false;
                   }
                 }else if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
                   end = true;
+                  interpolar = ((CMDS[i + 1][0] & 0x02) == 0x02)? true : false;
                 }
 
                 if(end){
-                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
-                  programa.cmmds[len].mover_abs.y = MM_ABS[1];
-                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  if(interpolar){
+                    programa.cmmds.push({ 'interpolar_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].interpolar_abs.y = MM_ABS[1];
+                    programa.cmmds[len].interpolar_abs.z = MM_ABS[2];
+                  }else{
+                    programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].mover_abs.y = MM_ABS[1];
+                    programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  }
                 }
                 break;
 
               case 2: // motor z
                 if(((CMDS[i + 1][0] >> 4) & 0x0F) == RUNop) {
-                  programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
-                  programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  if((CMDS[i + 1][0] & 0x02) == 0x02){
+                    programa.cmmds.push({ 'interpolar_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].interpolar_abs.z = MM_ABS[2];
+                  }else{
+                    programa.cmmds.push({ 'mover_abs': { "x": "none", "y": "none", "z": "none" } });
+                    programa.cmmds[len].mover_abs.z = MM_ABS[2];
+                  }
                 }
                 break;
             }
@@ -1056,14 +1124,45 @@ async function read_cmd(STEP) {
   }
 }
 
-async function read_pos_cmd(MOTOR) {
-  const CS = (0x00 - (0x3E + READ_POScmd + MOTOR)) & 0xFF;
-  const CMD = [0x3E, READ_POScmd, MOTOR, 0x00, 0x00, CS];
+async function read_pos_x_cmd() {
+  const CS = (0x00 - (0x3E + READ_POScmd + 0)) & 0xFF;
+  const CMD = [0x3E, READ_POScmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponseEncoder(70);
+  const res = await waitResponseEncoderX(70);
 
-  if ((res[1] == READ_POScmd) && (res[2] == 0xC0)) {
+  if ((res[1] == READ_POScmd) && (res[2] == 0x00)) {
+    let pos = Number((res[3] << 8) | res[4]);
+    return pos;
+  } else {
+    return 0;
+  }
+}
+
+async function read_pos_y_cmd() {
+  const CS = (0x00 - (0x3E + READ_POScmd + 0x01)) & 0xFF;
+  const CMD = [0x3E, READ_POScmd, 0x01, 0x00, 0x00, CS];
+  queueComand.enqueue(CMD);
+
+  const res = await waitResponseEncoderY(70);
+
+  if ((res[1] == READ_POScmd) && (res[2] == 0x01)) {
+    let pos = Number((res[3] << 8) | res[4]);
+    return pos;
+  } else {
+    return 0;
+  }
+}
+
+
+async function read_pos_z_cmd() {
+  const CS = (0x00 - (0x3E + READ_POScmd + 0x02)) & 0xFF;
+  const CMD = [0x3E, READ_POScmd, 0x02, 0x00, 0x00, CS];
+  queueComand.enqueue(CMD);
+
+  const res = await waitResponseEncoderZ(70);
+
+  if ((res[1] == READ_POScmd) && (res[2] == 0x02)) {
     let pos = Number((res[3] << 8) | res[4]);
     return pos;
   } else {
@@ -1154,15 +1253,53 @@ function waitResponse(time){
   });
 }
 
-function waitResponseEncoder(time) {
+function waitResponseEncoderX(time) {
   let cont = 0;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
-      if (!queueResponseEncoder.isEmpty()) {
+      if (!queueResponseEncoderX.isEmpty()) {
         clearInterval(interval);
-        let response = queueResponseEncoder.peek();
-        queueResponseEncoder.dequeue();
+        let response = queueResponseEncoderX.peek();
+        queueResponseEncoderX.dequeue();
+        resolve(response);
+      }
+      if(cont > 0 ){
+        clearInterval(interval);
+        resolve([0x00]);
+      }
+    }, 200);
+  });
+}
+
+function waitResponseEncoderY(time) {
+  let cont = 0;
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      cont++;
+      if (!queueResponseEncoderY.isEmpty()) {
+        clearInterval(interval);
+        let response = queueResponseEncoderY.peek();
+        queueResponseEncoderY.dequeue();
+        resolve(response);
+      }
+      if(cont > 0 ){
+        clearInterval(interval);
+        resolve([0x00]);
+      }
+    }, 200);
+  });
+}
+
+function waitResponseEncoderZ(time) {
+  let cont = 0;
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      cont++;
+      if (!queueResponseEncoderZ.isEmpty()) {
+        clearInterval(interval);
+        let response = queueResponseEncoderZ.peek();
+        queueResponseEncoderZ.dequeue();
         resolve(response);
       }
       if(cont > 0 ){

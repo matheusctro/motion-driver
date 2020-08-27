@@ -91,29 +91,33 @@ module.exports = {
     let i;
     for (i = 0; i < 64; i++) {
       const motion = await read(i);
-      if (motion.qtd_cmmds != 0) {
-        console.log(motion);
-        motions.push(motion);
-        const motionExists = await Motion.findOne({ id: motion.id });
-
-        if (motionExists) {
-          motionExists.id = motion.id;
-          motionExists.name = motion.name;
-          motionExists.qtd_cmmds = motion.qtd_cmmds;
-          motionExists.cmmds = motion.cmmds;
-          await motionExists.save();
-
-        } else {
-          const newMotion = await Motion.create({
-            id: motion.id,
-            name: motion.name,
-            qtd_cmmds: motion.qtd_cmmds,
-            cmmds: motion.cmmds,
-          });
+      if(motion != false){
+        if (motion.qtd_cmmds != 0) {
+          console.log(motion);
+          motions.push(motion);
+          const motionExists = await Motion.findOne({ id: motion.id });
+  
+          if (motionExists) {
+            motionExists.id = motion.id;
+            motionExists.name = motion.name;
+            motionExists.qtd_cmmds = motion.qtd_cmmds;
+            motionExists.cmmds = motion.cmmds;
+            await motionExists.save();
+            console.log("Programa salvo");
+  
+          } else {
+            const newMotion = await Motion.create({
+              id: motion.id,
+              name: motion.name,
+              qtd_cmmds: motion.qtd_cmmds,
+              cmmds: motion.cmmds,
+            });
+            console.log("Programa criado");
+          }
         }
       }
     }
-
+    console.log("Upload finalizado!");
     io.emit('/status', "Upload finalizado!");
 
     return res.json(motions);

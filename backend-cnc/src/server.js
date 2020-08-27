@@ -52,7 +52,7 @@ setInterval(async () => {
     setAllow(true);
     io.emit('/encoder', encoder);
   }
-},400);
+},300);
 
 setInterval(async () => {
   let ackResponse;
