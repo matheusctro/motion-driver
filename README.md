@@ -22,9 +22,9 @@ Things you need to install the software and how to install them:
 
 To install Node.js and npm, acess the links bellow.
 ```
-(https://nodejs.org/pt-br/download/)
+* [Node.js](https://nodejs.org/pt-br/download/)
 
-(https://www.npmjs.com/get-npm)
+* [npm](https://www.npmjs.com/get-npm)
 ```
 
 To check if you have Node.js installed, run this command in your terminal:
@@ -42,10 +42,17 @@ $ npm -v
 To install Monogo DB, follow the instructions in the lik below.
 
 ```
-(https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
+* [Mongo DB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
+```
+### Download, Install and build Interface
+
+Download the latest version of the project from git. Chose a directory and run the command bellow.
+```sh
+$ git clone https://git.grupoicts.com.br/motion-driver-group/interface-cnc.git
 ```
 
-### Installation Backend
+
+#### Installation Backend
 
 To install the packages of backend, into your backend's directory run the command below.
 
@@ -59,7 +66,7 @@ To run the backend, into your backend's directory run the command below.
 $ npm start
 ```
 
-### Installation Frontend
+#### Installation Frontend
 To install the packages of frontend, into your frontend's directory run the command below.
 
 ```sh
@@ -84,13 +91,8 @@ $ npm test
 
 ## Authors
 
-| ![Victoria Leite](https://secure.gravatar.com/avatar/910573a40433765adeefb92089edf8d9?s=800&d=identicon)|
-|:---------------------:|
-| [Victoria Leite](https://git.grupoicts.com.br/victoria.leite) |
-
-| ![Matheus Castro](https://secure.gravatar.com/avatar/c499e1d6be329aec1b274ec332ef04e5?s=800&d=identicon)|
-|:---------------------:|
-| [Matheus Castro](https://git.grupoicts.com.br/matheuscastro) |
+* **Matheus Castro** - *Frontend* - [PurpleBooth](https://git.grupoicts.com.br/matheuscastro)
+* **Victoria Leite** - *Backend* - [PurpleBooth](https://git.grupoicts.com.br/victoria.leite)
 
 ## License
 
