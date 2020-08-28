@@ -21,11 +21,11 @@ Things you need to install the software and how to install them:
 #### 1) Install Node.js and npm
 
 To install Node.js and npm, acess the links bellow.
-```
+
 * [Node.js](https://nodejs.org/pt-br/download/)
 
 * [npm](https://www.npmjs.com/get-npm)
-```
+
 
 To check if you have Node.js installed, run this command in your terminal:
 ```sh
@@ -41,9 +41,8 @@ $ npm -v
 
 To install Monogo DB, follow the instructions in the lik below.
 
-```
 * [Mongo DB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
-```
+
 ### Download, Install and build Interface
 
 Download the latest version of the project from git. Chose a directory and run the command bellow.
@@ -91,8 +90,8 @@ $ npm test
 
 ## Authors
 
-* **Matheus Castro** - *Frontend* - [PurpleBooth](https://git.grupoicts.com.br/matheuscastro)
-* **Victoria Leite** - *Backend* - [PurpleBooth](https://git.grupoicts.com.br/victoria.leite)
+* **Matheus Castro** - *Frontend* - [git](https://git.grupoicts.com.br/matheuscastro)
+* **Victoria Leite** - *Backend* - [git](https://git.grupoicts.com.br/victoria.leite)
 
 ## License
 
