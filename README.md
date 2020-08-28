@@ -1,7 +1,6 @@
 # interface-cnc
 
-Interface para o manipulador de três eixos cartesianos. 
-
+Interface web for the project Motion Drive.
 
 ## Browser Support
 
@@ -11,14 +10,76 @@ This Interface is supported in the following browsers.
 --- | --- | --- | --- | --- |
 39+ ✔ | 42+ ✔ | 29+ ✔ | 10.1+ ✔ | Nope ✘ |
 
-## Installation
+## 🚀 Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
+
+### Prerequisites
+
+Things you need to install the software and how to install them:
+
+#### 1) Install Node.js and npm
+
+To install Node.js and npm, acess the links bellow.
+```
+(https://nodejs.org/pt-br/download/)
+
+(https://www.npmjs.com/get-npm)
+```
+
+To check if you have Node.js installed, run this command in your terminal:
+```sh
+$ node -v
+```
+
+To check if you have npm installed, run this command in your terminal:
+```sh
+$ npm -v
+```
+
+#### 2) Install Mongo DB
+
+To install Monogo DB, follow the instructions in the lik below.
+
+```
+(https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
+```
+
+### Installation Backend
+
+To install the packages of backend, into your backend's directory run the command below.
 
 ```sh
 $ npm install 
 ```
 
+To run the backend, into your backend's directory run the command below.
+
 ```sh
 $ npm start
+```
+
+### Installation Frontend
+To install the packages of frontend, into your frontend's directory run the command below.
+
+```sh
+$ npm install 
+```
+
+To run the frontend, into your frontend's directory run the command below.
+
+```sh
+$ npm start
+```
+
+## Running the tests
+
+The backend has an automated test for the module drive.js, the responsible for the communication with Motion Drive.
+
+To run the automated test, into your backend's directory run the command below.
+
+```sh
+$ npm test
 ```
 
 ## Authors
