@@ -87,7 +87,7 @@ module.exports = {
       io.emit('/status', "Calibrado com sucesso!");
       return res.json({"status": "ok"});
     }else
-      return res.status(400).json({ "error": "Can't stop" });
+      return res.status(400).json({ "error": "Can't calibrate" });
   },
 
   async freeAxis(req, res) {
