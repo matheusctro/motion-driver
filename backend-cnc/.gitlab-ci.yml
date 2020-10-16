@@ -3,7 +3,7 @@
 # https://hub.docker.com/r/library/node/tags/
 image: node:latest
 
-stahes:
+stages:
   - build
   - test
 
@@ -20,7 +20,7 @@ install_dependencies:
       artifacts:
         paths:
           - node_modules/
-          
+
 testing_testing:
       stage: test
       script: npm test
