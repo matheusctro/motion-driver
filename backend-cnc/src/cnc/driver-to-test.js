@@ -47,15 +47,15 @@ import queueResponseEncoderZ from '../Queue/queueResponseEncoderZ';
 import queueResponseAck from '../../src/Queue/queueResponseAck';
 import { listen } from 'socket.io';
 
-async function calibration(onTest = false) {
-  return await execute_cmd(0x6C, 0x00, onTest);
+async function calibration() {
+  return await execute_cmd(0x6C, 0x00);
 }
 
-async function goHome(onTest = false) {
-  return await execute_cmd(0x50, 0x00, onTest);
+async function goHome() {
+  return await execute_cmd(0x50, 0x00);
 }
 
-async function step(motor, step, mode, onTest = false) {
+async function step(motor, step, mode) {
   let opcode1 = 0x00;
   let opcode0 = 0x00;
   let motor_ = 0;
@@ -73,85 +73,85 @@ async function step(motor, step, mode, onTest = false) {
     opcode1 = Number((GOSTEPop << 4) & 0xF0 | (motor_ << 2) & 0x0C | step & 0x0300);
     opcode0 = Number(step & 0xFF);
   }
-  return await execute_cmd(opcode1, opcode0, onTest);
+  return await execute_cmd(opcode1, opcode0);
 }
 
-async function stop(onTest = false) {
-  return await stop_cmd(onTest);
+async function stop() {
+  return await stop_cmd();
 }
 
-async function run(MOTION, onTest = false) {
+async function run(MOTION) {
   let res;
 
-  res = await run_cmd(MOTION, onTest);
+  res = await run_cmd(MOTION);
   if (!res) return false;
 
-  return await waitfinish(onTest);
+  return await waitfinish();
 }
 
-async function setSize(sizeX, sizeY, sizeZ, onTest = false) {
+async function setSize(sizeX, sizeY, sizeZ) {
   let VALUE1 = 0x00;
   let VALUE0 = 0x00;
 
   VALUE0 = sizeX & 0x00FF;
   VALUE1 = sizeX & 0xFF00;
 
-  let res = await set_param_cmd(PARAM_X, VALUE1, VALUE0, onTest);
+  let res = await set_param_cmd(PARAM_X, VALUE1, VALUE0);
   if (!res) return false;
 
   VALUE0 = sizeY & 0x00FF;
   VALUE1 = sizeY & 0xFF00;
 
-  res = await set_param_cmd(PARAM_Y, VALUE1, VALUE0, onTest);
+  res = await set_param_cmd(PARAM_Y, VALUE1, VALUE0);
   if (!res) return false;
 
   VALUE0 = sizeZ & 0x00FF;
   VALUE1 = sizeZ & 0xFF00;
 
-  res = await set_param_cmd(PARAM_Z, VALUE1, VALUE0, onTest);
+  res = await set_param_cmd(PARAM_Z, VALUE1, VALUE0);
   if (!res) return false;
 
   return true;
 }
 
-async function write(programa, onTest = false) {
+async function write(programa) {
   let MOTION = programa.id;
   let CMDS = programa.cmmds;
   let OPCODE = [];
   OPCODE = decode(CMDS);
 
-  let res = await execute_cmd(0x50, 0x00, onTest);
+  let res = await execute_cmd(0x50, 0x00);
   if (!res) return false;
   
 
-  res = await waitfinish(onTest);
+  res = await waitfinish();
   if (!res) return false;
 
-  res = await load_cmd(MOTION, onTest);
+  res = await load_cmd(MOTION);
   if (!res) return false;
 
   var j = 0;
   for (j = 0; j < OPCODE[1].length; j++) {
-    res = await write_cmd(j, OPCODE[0][j], OPCODE[1][j], onTest);
+    res = await write_cmd(j, OPCODE[0][j], OPCODE[1][j]);
     if (!res) return false;
   }
 
-  res = await update_cmd(onTest);
+  res = await update_cmd();
   if (!res) return false;
 
   return true;
 }
 
-async function read(MOTION, onTest = false) {
+async function read(MOTION) {
   let opcode = [];
   let CMD;
   let i = 0;
 
-  let res = await load_cmd(MOTION, onTest);
+  let res = await load_cmd(MOTION);
   if (!res) return false;
 
   for (i = 0; i < 64; i++) {
-    CMD = await read_cmd(i, onTest);
+    CMD = await read_cmd(i);
     opcode.push(CMD);
     if (CMD[0] == 0 && CMD[1] == 0) break;
   }
@@ -159,34 +159,34 @@ async function read(MOTION, onTest = false) {
   return uncode(opcode, MOTION);
 }
 
-async function clearMotion(MOTION, onTest = false) {
+async function clearMotion(MOTION) {
 
-  let res = await load_cmd(MOTION, onTest);
+  let res = await load_cmd(MOTION);
   if (!res) return false;
 
   var j = 0;
   for (j = 0; j < 64; j++) {
-    res = await write_cmd(j, 0x00, 0x00, onTest);
+    res = await write_cmd(j, 0x00, 0x00);
     if (!res) return false;
   }
 
-  res = await update_cmd(onTest);
+  res = await update_cmd();
   if (!res) return false;
 
   return true;
 }
 
-async function  readPosition(onTest = false){
+async function  readPosition(){
   let pos = [];
 
-  pos[0] = await read_pos_x_cmd(onTest);
-  pos[1] = await read_pos_y_cmd(onTest);
-  pos[2] = await read_pos_z_cmd(onTest);
+  pos[0] = await read_pos_x_cmd();
+  pos[1] = await read_pos_y_cmd();
+  pos[2] = await read_pos_z_cmd();
 
   return pos;
 }
 
-async function axesFree(mode, onTest = false) {
+async function axesFree(mode) {
   let mode_;
 
   if (mode == "true") {
@@ -195,11 +195,11 @@ async function axesFree(mode, onTest = false) {
     mode_ = 0x00;
   }
 
-  return await axesFree_cmd(mode_, onTest);
+  return await axesFree_cmd(mode_);
 }
 
-async function ack(onTest = false) {
-  return await ack_cmd(onTest);
+async function ack() {
+  return await ack_cmd();
 }
 
 async function execute(comand) {
@@ -218,7 +218,7 @@ async function execute(comand) {
   return true;
 }
 
-async function updateGains(gains, onTest = true) {
+async function updateGains(gains) {
 
   let VALUE1 = [0x00, 0x00, 0x00];
   let VALUE0 = [0x00, 0x00, 0x00];
@@ -236,44 +236,44 @@ async function updateGains(gains, onTest = true) {
 
   switch(gains.motor){
     case 'x':
-      res = await set_param_cmd(PARAM_kp_x, VALUE1[0], VALUE0[0], onTest);
+      res = await set_param_cmd(PARAM_kp_x, VALUE1[0], VALUE0[0]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_kd_x, VALUE1[1], VALUE0[1], onTest);
+      res = await set_param_cmd(PARAM_kd_x, VALUE1[1], VALUE0[1]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_ki_x, VALUE1[2], VALUE0[2], onTest);
+      res = await set_param_cmd(PARAM_ki_x, VALUE1[2], VALUE0[2]);
       if (!res) return false;
 
-      res = await update_cmd(onTest);
+      res = await update_cmd();
       if (!res) return false;
 
       break;
     case 'y':
-      res = await set_param_cmd(PARAM_kp_y, VALUE1[0], VALUE0[0], onTest);
+      res = await set_param_cmd(PARAM_kp_y, VALUE1[0], VALUE0[0]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_kd_y, VALUE1[1], VALUE0[1], onTest);
+      res = await set_param_cmd(PARAM_kd_y, VALUE1[1], VALUE0[1]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_ki_y, VALUE1[2], VALUE0[2], onTest);
+      res = await set_param_cmd(PARAM_ki_y, VALUE1[2], VALUE0[2]);
       if (!res) return false;
 
-      res = await update_cmd(onTest);
+      res = await update_cmd();
       if (!res) return false;
 
       break;
     case 'z':
-      res = await set_param_cmd(PARAM_kp_z, VALUE1[0], VALUE0[0], onTest);
+      res = await set_param_cmd(PARAM_kp_z, VALUE1[0], VALUE0[0]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_kd_z, VALUE1[1], VALUE0[1], onTest);
+      res = await set_param_cmd(PARAM_kd_z, VALUE1[1], VALUE0[1]);
       if (!res) return false;
 
-      res = await set_param_cmd(PARAM_ki_z, VALUE1[2], VALUE0[2], onTest);
+      res = await set_param_cmd(PARAM_ki_z, VALUE1[2], VALUE0[2]);
       if (!res) return false;
 
-      res = await update_cmd(onTest);
+      res = await update_cmd();
       if (!res) return false;
 
       break;
@@ -1041,12 +1041,12 @@ function uncode(CMDS, MOTION) {
   return programa;
 }
 
-async function load_cmd(MOTION, onTest = false) {
+async function load_cmd(MOTION) {
   const CS = (0x00 - (0x3E + LOADcmd + MOTION)) & 0xFF;
   const CMD = [0x3E, LOADcmd, MOTION, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == LOADcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1055,27 +1055,27 @@ async function load_cmd(MOTION, onTest = false) {
   }
 }
 
-async function execute_cmd(OPCODE1, OPCODE2, onTest = false) {
+async function execute_cmd(OPCODE1, OPCODE2) {
   const CS = (0x00 - (0x3E + EXECUTEcmd + OPCODE1 + OPCODE2)) & 0xFF;
   const CMD = [0x3E, EXECUTEcmd, OPCODE1, OPCODE2, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == EXECUTEcmd) && (res[2] == 0xC0)) {
     return true;
   } else {
-    console.log(`Erro: ${res}`);
+    console.log(`Erro-exe: ${res}`);
     return false;
   }
 }
 
-async function set_param_cmd(PARAM, VALUE1, VALUE2, onTest = false) {
+async function set_param_cmd(PARAM, VALUE1, VALUE2) {
   const CS = (0x00 - (0x3E + SET_PARAMcmd + PARAM + VALUE1 + VALUE2)) & 0xFF;
   const CMD = [0x3E, SET_PARAMcmd, PARAM, VALUE1, VALUE2, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == SET_PARAMcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1084,12 +1084,12 @@ async function set_param_cmd(PARAM, VALUE1, VALUE2, onTest = false) {
   }
 }
 
-async function write_cmd(STEP, OPCODE1, OPCODE2, onTest = false) {
+async function write_cmd(STEP, OPCODE1, OPCODE2) {
   const CS = (0x00 - (0x3E + WRITEcmd + STEP + OPCODE1 + OPCODE2)) & 0xFF;
   const CMD = [0x3E, WRITEcmd, STEP, OPCODE1, OPCODE2, CS];
   queueComand.enqueue(CMD);
-  
-  const res = await waitResponse(onTest);
+
+  const res = await waitResponse(70);
 
   if ((res[1] == WRITEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1098,12 +1098,12 @@ async function write_cmd(STEP, OPCODE1, OPCODE2, onTest = false) {
   }
 }
 
-async function update_cmd(onTest = false) {
+async function update_cmd() {
   const CS = (0x00 - (0x3E + UPDATEcmd)) & 0xFF;
   const CMD = [0x3E, UPDATEcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == UPDATEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1112,12 +1112,12 @@ async function update_cmd(onTest = false) {
   }
 }
 
-async function read_cmd(STEP, onTest = false) {
+async function read_cmd(STEP) {
   const CS = (0x00 - (0x3E + READcmd + STEP)) & 0xFF;
   const CMD = [0x3E, READcmd, STEP, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == READcmd) && (res[2] == 0xC0)) {
     return [res[3], res[4]];
@@ -1126,12 +1126,12 @@ async function read_cmd(STEP, onTest = false) {
   }
 }
 
-async function read_pos_x_cmd(onTest = false) {
+async function read_pos_x_cmd() {
   const CS = (0x00 - (0x3E + READ_POScmd + 0)) & 0xFF;
   const CMD = [0x3E, READ_POScmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponseEncoderX(onTest);
+  const res = await waitResponseEncoderX(70);
 
   if ((res[1] == READ_POScmd) && (res[2] == 0x00)) {
     let pos = Number((res[3] << 8) | res[4]);
@@ -1141,12 +1141,12 @@ async function read_pos_x_cmd(onTest = false) {
   }
 }
 
-async function read_pos_y_cmd(onTest = false) {
+async function read_pos_y_cmd() {
   const CS = (0x00 - (0x3E + READ_POScmd + 0x01)) & 0xFF;
   const CMD = [0x3E, READ_POScmd, 0x01, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponseEncoderY(onTest);
+  const res = await waitResponseEncoderY(70);
 
   if ((res[1] == READ_POScmd) && (res[2] == 0x01)) {
     let pos = Number((res[3] << 8) | res[4]);
@@ -1157,12 +1157,12 @@ async function read_pos_y_cmd(onTest = false) {
 }
 
 
-async function read_pos_z_cmd(onTest = false) {
+async function read_pos_z_cmd() {
   const CS = (0x00 - (0x3E + READ_POScmd + 0x02)) & 0xFF;
   const CMD = [0x3E, READ_POScmd, 0x02, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponseEncoderZ(onTest);
+  const res = await waitResponseEncoderZ(70);
 
   if ((res[1] == READ_POScmd) && (res[2] == 0x02)) {
     let pos = Number((res[3] << 8) | res[4]);
@@ -1172,12 +1172,12 @@ async function read_pos_z_cmd(onTest = false) {
   }
 }
 
-async function run_cmd(MOTION, onTest = false) {
+async function run_cmd(MOTION) {
   const CS = (0x00 - (0x3E + RUNcmd + MOTION)) & 0xFF;
   const CMD = [0x3E, RUNcmd, MOTION, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   // console.log(res);
 
@@ -1188,12 +1188,12 @@ async function run_cmd(MOTION, onTest = false) {
   }
 }
 
-async function stop_cmd(onTest = false) {
+async function stop_cmd() {
   const CS = (0x00 - (0x3E + STOPcmd)) & 0xFF;
   const CMD = [0x3E, STOPcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == STOPcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1202,12 +1202,12 @@ async function stop_cmd(onTest = false) {
   }
 }
 
-async function ack_cmd(onTest = false) {
+async function ack_cmd() {
   const CS = (0x00 - (0x3E + ACKcmd)) & 0xFF;
   const CMD = [0x3E, ACKcmd, 0x00, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponseAck(onTest);
+  const res = await waitResponseAck(70);
 
   if ((res[1] == ACKcmd) && (res[2] == 0xC0)) {
     return res[3];
@@ -1216,12 +1216,12 @@ async function ack_cmd(onTest = false) {
   }
 }
 
-async function axesFree_cmd(mode, onTest = false) {
+async function axesFree_cmd(mode) {
   const CS = (0x00 - (0x3E + AXES_FREEcmd + mode)) & 0xFF;
   const CMD = [0x3E, AXES_FREEcmd, mode, 0x00, 0x00, CS];
   queueComand.enqueue(CMD);
 
-  const res = await waitResponse(onTest);
+  const res = await waitResponse(70);
 
   if ((res[1] == AXES_FREEcmd) && (res[2] == 0xC0)) {
     return true;
@@ -1231,12 +1231,8 @@ async function axesFree_cmd(mode, onTest = false) {
 }
 
 // Functions wait
-function waitResponse(onTest = false){
+function waitResponse(time){
   let cont = 0;
-  let time;
-
-  time = (onTest)? 10:200;
-
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
@@ -1255,16 +1251,13 @@ function waitResponse(onTest = false){
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, time); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+    // }, 200); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+        }, 10);
   });
 }
 
-function waitResponseEncoderX(onTest = false) {
+function waitResponseEncoderX(time) {
   let cont = 0;
-  let time;
-
-  time = (onTest)? 10:200;
-
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
@@ -1278,15 +1271,13 @@ function waitResponseEncoderX(onTest = false) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, time); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+    // }, 200); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+        }, 10);
   });
 }
 
-function waitResponseEncoderY(onTest = false) {
+function waitResponseEncoderY(time) {
   let cont = 0;
-  let time;
-
-  time = (onTest)? 10:200;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
@@ -1300,15 +1291,13 @@ function waitResponseEncoderY(onTest = false) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, time);   // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);  
+    // }, 200);   // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);  
+    }, 10);
   });
 }
 
-function waitResponseEncoderZ(onTest = false) {
+function waitResponseEncoderZ(time) {
   let cont = 0;
-  let time;
-
-  time = (onTest)? 10:200;
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
@@ -1322,16 +1311,13 @@ function waitResponseEncoderZ(onTest = false) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, time); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+    // }, 200); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+        }, 10);
   });
 }
 
-function waitResponseAck(onTest = false) {
+function waitResponseAck(time) {
   let cont = 0;
-  let time;
-
-  time = (onTest)? 10:200;
-
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       cont++;
@@ -1345,26 +1331,23 @@ function waitResponseAck(onTest = false) {
         clearInterval(interval);
         resolve([0x00]);
       }
-    }, time); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+    // }, 200); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 10);
+        }, 10);
   });
 }
 
-async function waitfinish(onTest = False){
+async function waitfinish(){
   let cont = 0;
   let encoder;
-  let time;
-
-  time = (onTest)? 100:500;
   return new Promise((resolve) => {
     const interval = setInterval(async () => {
       let response;
       cont++;
 
-      encoder = await readPosition(onTest);
-      if(!onTest)
-        io.emit('/encoder', encoder); 
+      encoder = await readPosition();
+      //io.emit('/encoder', encoder);  // Para o teste passar, precisa-se comentar esta linha
 
-      response  = await ack_cmd(onTest);
+      response  = await ack_cmd();
       if(response == 0){
         clearInterval(interval);
         resolve(true);
@@ -1373,7 +1356,8 @@ async function waitfinish(onTest = False){
         clearInterval(interval);
         resolve(false);
       }
-    }, time); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 100);
+  // }, 500); // Para o teste passar, precisa-se comentar esta linha e usar isso -> }, 100);
+  }, 100);
   });
 }
 
