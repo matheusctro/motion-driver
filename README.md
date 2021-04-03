@@ -90,8 +90,8 @@ $ npm test
 
 ## Authors
 
-* **Matheus Castro** - *Frontend* - [git](https://git.grupoicts.com.br/matheuscastro)
-* **Victoria Leite** - *Backend* - [git](https://git.grupoicts.com.br/victoria.leite)
+* **Matheus Castro** - *Frontend* - [git](https://github.com/matheusctro)
+* **Victoria Leite** - *Backend* - [git](https://github.com/VicLeite)
 
 ## License
 
